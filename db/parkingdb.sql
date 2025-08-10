@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Aug 10, 2025 at 01:36 PM
+-- Generation Time: Aug 10, 2025 at 06:14 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -34,6 +34,13 @@ CREATE TABLE `email_verifications` (
   `created_at` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Dumping data for table `email_verifications`
+--
+
+INSERT INTO `email_verifications` (`id`, `user_id`, `token`, `created_at`) VALUES
+(1, 4, '3a976d577735f0faf3e7ac7e99225b46', '2025-08-10 11:59:42');
+
 -- --------------------------------------------------------
 
 --
@@ -47,7 +54,7 @@ CREATE TABLE `space` (
   `lng` varchar(12) DEFAULT NULL,
   `vehicletype` varchar(20) DEFAULT NULL,
   `location` varchar(50) DEFAULT NULL,
-  `status` enum('1','0') DEFAULT '0'
+  `status` enum('1','0') NOT NULL DEFAULT '0'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
@@ -56,7 +63,9 @@ CREATE TABLE `space` (
 
 INSERT INTO `space` (`space_id`, `user_id`, `lat`, `lng`, `vehicletype`, `location`, `status`) VALUES
 (7, 3, '27.694634128', '85.32078932', 'Car', 'ANNAPURNA', '1'),
-(8, 2, '27.695676505', '85.320704287', 'Motorbike', 'MHP', '1');
+(8, 2, '27.695676505', '85.320704287', 'Motorbike', 'MHP', '1'),
+(11, 5, '27.692162169', '85.32553831', 'Motorbike', 'Kathmandu District Court', '0'),
+(12, 6, '27.696080238', '85.321283644', 'Motorbike', 'Department of Archaeology', '1');
 
 -- --------------------------------------------------------
 
@@ -133,7 +142,9 @@ CREATE TABLE `users` (
 INSERT INTO `users` (`id`, `username`, `name`, `email`, `phone`, `password`, `role`, `Created_date`) VALUES
 (1, 'admin', 'Admin User', 'admin@example.com', '9800000000', 'admin123', 'admin', '2025-08-10'),
 (2, 'john_doe', 'John Doe', 'john@example.com', '9800000010', 'john123', 'user', '2025-08-01'),
-(3, 'mary_smith', 'Mary Smith', 'mary@example.com', '9800000002', 'mary123', 'user', '2025-08-05');
+(3, 'mary_smith', 'Mary Smith', 'mary@example.com', '9800000002', 'mary123', 'user', '2025-08-05'),
+(5, 'm.kim', 'mkim User', 'mkim013@proton.me', '9841000456', 'ForMkim013', 'user', '2025-08-10'),
+(6, 'rojarmhj', 'Rojar Maharjan', 'rojarmhj@proton.me', '9841600003', 'ForRojar1', 'user', '2025-08-10');
 
 -- --------------------------------------------------------
 
@@ -154,7 +165,8 @@ CREATE TABLE `userspace` (
 
 INSERT INTO `userspace` (`userid`, `spaceid`, `userSpaceId`, `status`) VALUES
 (2, 7, 5, '1'),
-(3, 8, 6, '1');
+(3, 8, 6, '1'),
+(5, 12, 8, '1');
 
 --
 -- Indexes for dumped tables
@@ -208,13 +220,13 @@ ALTER TABLE `userspace`
 -- AUTO_INCREMENT for table `email_verifications`
 --
 ALTER TABLE `email_verifications`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT for table `space`
 --
 ALTER TABLE `space`
-  MODIFY `space_id` int(3) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  MODIFY `space_id` int(3) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
 
 --
 -- AUTO_INCREMENT for table `tblcategory`
@@ -232,13 +244,13 @@ ALTER TABLE `tblvehicle`
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT for table `userspace`
 --
 ALTER TABLE `userspace`
-  MODIFY `userSpaceId` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `userSpaceId` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- Constraints for dumped tables
