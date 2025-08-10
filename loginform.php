@@ -1,19 +1,25 @@
-
 <?php
 require 'config/function.php';
 
-
 if(isset($_SESSION['auth'])){
-    if($_SESSION['loggedInUserRole']=='admin'){
-        header('location:admin/index.php');
-    }else{
-        header('location:user/index.php');
+    if($_SESSION['loggedInUserRole'] == 'admin'){
+        header('Location: ' . BASE_URL . 'admin/index.php');
+        exit();
+    } else {
+        header('Location: ' . BASE_URL . 'user/index.php');
+        exit();
     }
 }
 ?>
+<!DOCTYPE html>
+<html lang="en">
 
 <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Login / Signup</title>
     <style>
+        /* Your existing CSS here */
         @import url('https://fonts.googleapis.com/css?family=Montserrat|Quicksand');
 
         * {
@@ -125,7 +131,6 @@ if(isset($_SESSION['auth'])){
             display: none;
         }
 
-
         #login-form button,
         #signup-form button {
             width: 100%;
@@ -157,7 +162,6 @@ if(isset($_SESSION['auth'])){
             color: #222;
         }
 
-
         .form-modal p {
             font-size: 16px;
             font-weight: bold;
@@ -172,7 +176,6 @@ if(isset($_SESSION['auth'])){
         .form-modal p a:hover {
             color: #222;
         }
-
 
         .form-modal i {
             position: absolute;
@@ -208,6 +211,24 @@ if(isset($_SESSION['auth'])){
                 display: none !important;
             }
         }
+
+        /* ALERT MESSAGES */
+        .alert {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+
+        .alert-success {
+            background-color: #d4edda;
+            color: #155724;
+        }
+
+        .alert-danger {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
     </style>
 </head>
 
@@ -220,24 +241,16 @@ if(isset($_SESSION['auth'])){
         </div>
 
         <div id="login-form">
-            <form method="POST" action="login-code.php">
-                <input type="text" placeholder="Enter email" name="email" />
-                <input type="password" placeholder="Enter password" name="password" />
+            <form method="POST" action="<?= BASE_URL ?>login-code.php">
+                <input type="text" placeholder="Enter email" name="email" required />
+                <input type="password" placeholder="Enter password" name="password" required />
                 <input type="submit" class="btn login" value="login" name="login">
-                <p style="color:RED;"><?= alertMessage(); ?></P>
             </form>
+            <?php alertMessage(); ?>
         </div>
 
         <div id="signup-form">
-            <form method="POST" action="signup-code.php" onsubmit="submitHandler(event)" autocomplete="on">
-                <!-- <input type="text" placeholder="Choose username" name="username" required />
-                <input type="text" placeholder="Enter your full name" id="name" name="name" required />
-                <input type="email" placeholder="Enter your email" name="email" required />
-                <input type="number" id="phone" placeholder="Enter your phone number" name="phone" required />
-                <input type="password" id="pass" placeholder="Create password" name="password" required />
-                <input type="password" id="passRe" placeholder="Confirm password" name="passRe" required />
-                <input type="submit" class="btn signup" name="signup" value="create account" > -->
-                <!-- <p>Clicking <strong>create account</strong> means that you are agree to our <a href="javascript:void(0)">terms of services</a>.</p> -->
+            <form method="POST" action="<?= BASE_URL ?>signup-code.php" onsubmit="submitHandler(event)" autocomplete="on">
                 <input type="text" placeholder="Choose username" id="username" name="username" required />
                 <span id="username-error" class="error-message"></span>
                 <input type="text" placeholder="Enter your full name" id="name" name="name" required />
@@ -257,13 +270,12 @@ if(isset($_SESSION['auth'])){
     </div>
 
     <script>
-        window.onload=function(){
+        window.onload = function () {
             if (window.history.replaceState) {
-            window.history.replaceState(null, null, window.location.href);
+                window.history.replaceState(null, null, window.location.href);
+            }
         }
-        }
-        
-       
+
         function toggleSignup() {
             document.getElementById("login-toggle").style.backgroundColor = "#fff";
             document.getElementById("login-toggle").style.color = "#222";
@@ -283,7 +295,6 @@ if(isset($_SESSION['auth'])){
         }
 
         function submitHandler(event) {
-            //event.preventDefault();
             let ok = 1;
 
             // Clear previous error messages
@@ -296,7 +307,7 @@ if(isset($_SESSION['auth'])){
             // Username validation
             let username = document.getElementById("username");
             let usernameVal = username.value;
-            let usernameRegex = /^[a-zA-Z][a-zA-Z0-9._]{3,8}[a-zA-Z0-9]$/
+            let usernameRegex = /^[a-zA-Z][a-zA-Z0-9._]{3,8}[a-zA-Z0-9]$/;
             if (!usernameRegex.test(usernameVal)) {
                 ok = 0;
                 username.style.border = "solid 1px #ff0000";
@@ -309,7 +320,7 @@ if(isset($_SESSION['auth'])){
             // Full name validation
             let name = document.getElementById("name");
             let nameVal = name.value;
-            let nameRegex  = /^([A-Za-z]{2,}\.?)(\s[A-Za-z]{2,}\.?)+$/;
+            let nameRegex = /^([A-Za-z]{2,}\.?)(\s[A-Za-z]{2,}\.?)+$/;
             if (!nameRegex.test(nameVal)) {
                 ok = 0;
                 name.style.border = "solid 1px #ff0000";
@@ -337,12 +348,12 @@ if(isset($_SESSION['auth'])){
             let passVal = pass.value;
             let rpass = document.getElementById("rpass");
             let rpassVal = rpass.value;
-            if (passVal.length < 6 && passVal.length<16) {
+            if (passVal.length < 6 || passVal.length > 16) {
                 ok = 0;
                 pass.style.border = "solid 1px #ff0000";
                 rpass.style.border = "solid 1px #ff0000";
                 pass.focus();
-                document.getElementById("pass-error").textContent = "Password must be at least 6 characters long.";
+                document.getElementById("pass-error").textContent = "Password must be between 6 and 16 characters long.";
             } else {
                 pass.style.border = "0px";
                 rpass.style.border = "0px";
@@ -357,13 +368,13 @@ if(isset($_SESSION['auth'])){
                 pass.style.border = "0px";
                 rpass.style.border = "0px";
             }
-            console.log("abc",ok);
 
             if (ok === 0) {
                 event.preventDefault();
             }
             return ok;
         }
-
     </script>
 </body>
+
+</html>

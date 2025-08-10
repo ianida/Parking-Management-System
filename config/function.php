@@ -1,17 +1,25 @@
 <?php
 session_start();
+
+require_once __DIR__ . '/config.php';  // Adjust path if needed
 require 'dbcon.php';
 
 function validate($inputData){
- global $conn;
-
- $validateData = mysqli_real_escape_string($conn, $inputData);
- return trim($validateData);
+    global $conn;
+    $validateData = mysqli_real_escape_string($conn, $inputData);
+    return trim($validateData);
 }
 
-function redirect($url,$status){
-    $_SESSION['status']= $status;
-    header('Location: '.$url);
+function redirect($url, $status, $type = 'success'){
+    $_SESSION['status'] = $status;
+    $_SESSION['status_type'] = $type;  // 'success' or 'error'
+
+    // Prepend BASE_URL if $url is not absolute
+    if (!preg_match('/^https?:\/\//', $url)) {
+        $url = BASE_URL . $url;
+    }
+
+    header('Location: ' . $url);
     exit(0);
 }
 
@@ -19,10 +27,16 @@ function alertMessage()
 {
     if(isset($_SESSION['status']))
     {
-        echo '<div class="alert alert-success"> 
-        <h6>'.$_SESSION['status'].'</h6>
+        $type = isset($_SESSION['status_type']) ? $_SESSION['status_type'] : 'success';
+
+        $class = ($type === 'error') ? 'alert alert-danger' : 'alert alert-success';
+
+        echo '<div class="'.$class.'"> 
+        <h6>'.htmlspecialchars($_SESSION['status']).'</h6>
         </div>';
+
         unset($_SESSION['status']);
+        unset($_SESSION['status_type']);
     }
 }
 
@@ -48,6 +62,7 @@ function checkparamid($paramType)
         return 'No id given';
     }
 }
+
 function getById($tableName,$id)
 {
     global $conn;
@@ -94,7 +109,6 @@ function deleteQuery($tableName,$id){
     $query= "DELETE FROM $table WHERE id='$id' LIMIT 1";
     $result = mysqli_query($conn,$query);
     return $result;
-
 }
 
 function logoutSession()
@@ -103,5 +117,4 @@ function logoutSession()
     unset($_SESSION['loggedInUserRole']);
     unset($_SESSION['loggedInUser']);
 }
-
 ?>
