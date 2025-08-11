@@ -1,15 +1,16 @@
 <?php include('include/header.php'); ?>
+
 <?php
 $catid = isset($_GET['del']) ? $_GET['del'] : 0;
 if (!empty($catid)) {
     $catid = mysqli_real_escape_string($conn, $catid);
     $query = "DELETE FROM tblvehicle WHERE ID = '$catid'";
     if (mysqli_query($conn, $query)) {
-    echo "<script>alert('Data Deleted');</script>";
-    echo "<script>window.location.href='manage-outgoingvehicle.php'</script>";
-} else {
-    echo "Error: 'del' key is not set.". mysqli_error($conn);
-}
+        echo "<script>alert('Data Deleted');</script>";
+        echo "<script>window.location.href='manage-outgoingvehicle.php'</script>";
+    } else {
+        echo "Error deleting record: " . mysqli_error($conn);
+    }
 }
 ?>
 
@@ -33,18 +34,24 @@ if (!empty($catid)) {
                         </thead>
                         <tbody>
                             <?php
-                            $ret = mysqli_query($conn, "SELECT * FROM tblvehicle WHERE Status='Out'");
+                            // Updated query with JOIN to get OwnerName
+                            $ret = mysqli_query($conn, "
+                                SELECT tblvehicle.*, users.name AS OwnerName 
+                                FROM tblvehicle 
+                                LEFT JOIN users ON tblvehicle.UserId = users.id 
+                                WHERE tblvehicle.Status = 'Out'
+                            ");
                             $cnt = 1;
                             while ($row = mysqli_fetch_array($ret)) {
                                 ?>
                                 <tr>
                                     <td><?= $cnt; ?></td>
-                                    <td><?= $row['ParkingNumber']; ?></td>
-                                    <td><?= $row['OwnerName']; ?></td>
-                                    <td><?= $row['RegistrationNumber']; ?></td>
+                                    <td><?= htmlspecialchars($row['ParkingNumber']); ?></td>
+                                    <td><?= htmlspecialchars($row['OwnerName']); ?></td>
+                                    <td><?= htmlspecialchars($row['RegistrationNumber']); ?></td>
                                     <td>
                                         <a href="view-outgoingvehicle-detail.php?viewid=<?= $row['ID']; ?>" class="btn btn-primary">View</a>
-                                        <a href="print.php?vid=<?= $row['ID']; ?>" style="cursor:pointer" target="_blank" class="btn btn-warning">Print</a>
+                                        <a href="print.php?vid=<?= $row['ID']; ?>" target="_blank" class="btn btn-warning">Print</a>
                                         <a href="manage-outgoingvehicle.php?del=<?= $row['ID']; ?>" class="btn btn-danger" onClick="return confirm('Are you sure you want to delete?')">Delete</a>
                                     </td>
                                 </tr>
@@ -59,7 +66,5 @@ if (!empty($catid)) {
         </div>
     </div>
 </div>
-
-
 
 <?php include('include/footer.php'); ?>

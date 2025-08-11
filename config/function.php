@@ -1,8 +1,11 @@
 <?php
-session_start();
+// Start session only if none started yet
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 
 require_once __DIR__ . '/config.php';  // Adjust path if needed
-require 'dbcon.php';
+require_once 'dbcon.php';
 
 function validate($inputData){
     global $conn;

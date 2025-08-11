@@ -1,20 +1,17 @@
 <?php include('include/header.php'); ?>
 <?php
 if(isset($_POST['submit']))
-    {
-         $catname=$_POST['catename'];
-       
-        $query=mysqli_query($conn,"insert into tblcategory (VehicleCat) value('$catname')");
-        if ($query) {
-echo "<script>alert('Vehicle Category Entry Detail has been added');</script>";
-echo "<script>window.location.href ='manage-category.php'</script>";
-  }
-  else
-    {
-     echo "<script>alert('Something Went Wrong. Please try again.');</script>";       
-    }
+{
+    $catname = $_POST['catename'];
 
-    
+    $query = mysqli_query($conn, "INSERT INTO tblcategory (VehicleCat) VALUES ('$catname')");
+    if ($query) {
+        echo "<div class='alert alert-success text-center' id='success-msg' role='alert' style='margin-top:20px;'>
+                Vehicle Category Entry Detail has been added
+              </div>";
+    } else {
+        echo "<script>alert('Something Went Wrong. Please try again.');</script>";
+    }
 }
 ?>
 
@@ -43,6 +40,14 @@ echo "<script>window.location.href ='manage-category.php'</script>";
     </div>
 </div>
 
-
+<script>
+    setTimeout(function() {
+        var msg = document.getElementById('success-msg');
+        if(msg) {
+            msg.style.display = 'none';
+            //window.location.href = 'manage-category.php';
+        }
+    }, 1500); // 1.5 seconds
+</script>
 
 <?php include('include/footer.php'); ?>

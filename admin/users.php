@@ -1,11 +1,11 @@
-<?php include('include/header.php'); 
-session_start();
-$_SESSION['auth'] = true;
-                    $_SESSION['loggedInUserRole'] = $row['role'];
-                    $_SESSION['loggedInUser'] = [
-                        'name' => $row['name'],
-                        'email' => $row['email']
-                    ];
+<?php 
+include('include/header.php'); 
+
+// Optional: check if user is logged in and is admin before showing this page
+if (!isset($_SESSION['auth']) || $_SESSION['loggedInUserRole'] !== 'admin') {
+    header('Location: ../loginform.php'); // redirect non-admin users
+    exit;
+}
 ?>
 
 <div class="row"></div>
@@ -19,9 +19,9 @@ $_SESSION['auth'] = true;
         </div>
         <div class="card-body">
 
-        <?=alertMessage(); ?>
+        <?= alertMessage(); ?>
 
-        <table class="table table-bordered table-stripped">
+        <table class="table table-bordered table-striped">
             <thead>
                 <tr>
                     <th>Id</th>
@@ -42,15 +42,15 @@ $_SESSION['auth'] = true;
                     {
                         ?>
                 <tr>
-                    <td><?= $userItem['id']; ?></td>
-                    <td><?= $userItem['username']; ?></td>
-                    <td><?= $userItem['name']; ?></td>
-                    <td><?= $userItem['email']; ?></td>
-                    <td><?= $userItem['phone']; ?></td>
-                    <td><?= $userItem['role']; ?></td>
+                    <td><?= htmlspecialchars($userItem['id']); ?></td>
+                    <td><?= htmlspecialchars($userItem['username']); ?></td>
+                    <td><?= htmlspecialchars($userItem['name']); ?></td>
+                    <td><?= htmlspecialchars($userItem['email']); ?></td>
+                    <td><?= htmlspecialchars($userItem['phone']); ?></td>
+                    <td><?= htmlspecialchars($userItem['role']); ?></td>
                     <td>
-                        <a href="users-edit.php?id=<?= $userItem['id']; ?>" class="btn btn-success btn-sm">Edit</a>
-                        <a href="users-delete.php?id=<?= $userItem['id']; ?>" 
+                        <a href="users-edit.php?id=<?= urlencode($userItem['id']); ?>" class="btn btn-success btn-sm">Edit</a>
+                        <a href="users-delete.php?id=<?= urlencode($userItem['id']); ?>" 
                            class="btn btn-danger btn-sm mx-2"
                            onclick="return confirm('Are you sure you want to delete this data?')"
                            > Delete</a>
