@@ -48,7 +48,7 @@ function sendEmail($to, $toName, $subject, $body) {
     }
 }
 
-// Update space status to 0 (available)
+// 1. Update space status to 0 (available)
 $query = "UPDATE space SET status = '0' WHERE space_id = ?";
 if ($stmt = $conn->prepare($query)) {
     $stmt->bind_param("i", $space_id);
@@ -60,19 +60,22 @@ if ($stmt = $conn->prepare($query)) {
     die("Failed to prepare update statement: " . $conn->error);
 }
 
-// Delete booking record only for this user and space
-$deleteQuery = "DELETE FROM userspace WHERE userid = ? AND spaceid = ?";
-if ($delStmt = $conn->prepare($deleteQuery)) {
-    $delStmt->bind_param("ii", $user_id, $space_id);
-    if (!$delStmt->execute()) {
-        die("Failed to delete booking record: " . $delStmt->error);
+// 2. Update booking record: status=0, EndTime=NOW()
+$updateBooking = "UPDATE userspace 
+                  SET status = '0', EndTime = NOW() 
+                  WHERE userid = ? AND spaceid = ? AND status = '1' 
+                  ORDER BY StartTime DESC LIMIT 1";
+if ($updStmt = $conn->prepare($updateBooking)) {
+    $updStmt->bind_param("ii", $user_id, $space_id);
+    if (!$updStmt->execute()) {
+        die("Failed to update booking record: " . $updStmt->error);
     }
-    $delStmt->close();
+    $updStmt->close();
 } else {
-    die("Failed to prepare delete statement: " . $conn->error);
+    die("Failed to prepare booking update statement: " . $conn->error);
 }
 
-// Get owner info for email
+// 3. Get owner info for email
 $sqlOwner = "SELECT u.email, u.name FROM users u JOIN space s ON u.id = s.user_id WHERE s.space_id = ?";
 if ($stmtOwner = $conn->prepare($sqlOwner)) {
     $stmtOwner->bind_param("i", $space_id);
@@ -84,7 +87,7 @@ if ($stmtOwner = $conn->prepare($sqlOwner)) {
     die("Failed to prepare owner query: " . $conn->error);
 }
 
-// Get user info for email
+// 4. Get user info for email
 $sqlUser = "SELECT email, name FROM users WHERE id = ?";
 if ($stmtUser = $conn->prepare($sqlUser)) {
     $stmtUser->bind_param("i", $user_id);
@@ -96,21 +99,25 @@ if ($stmtUser = $conn->prepare($sqlUser)) {
     die("Failed to prepare user query: " . $conn->error);
 }
 
-// Prepare email content
+// 5. Prepare email content
 $subjectOwner = "Booking Ended for Your Parking Space";
 $messageOwner = "Dear " . $owner['name'] . ",\n\nThe booking for your parking space has been ended by " . $user['name'] . ".\n\nRegards,\nParking Management System";
 
 $subjectUser = "Booking Ended Confirmation";
 $messageUser = "Dear " . $user['name'] . ",\n\nYou have successfully ended the booking for the parking space.\n\nRegards,\nParking Management System";
 
-// Send emails
+// 6. Send emails
 sendEmail($owner['email'], $owner['name'], $subjectOwner, $messageOwner);
 sendEmail($user['email'], $user['name'], $subjectUser, $messageUser);
 
+// 7. Set session message and redirect
 $_SESSION['message'] = "Booking Ended Successfully.";
 $_SESSION['message_type'] = "success";
 
 $conn->close();
 
-header("Location: bookedspace.php");
+//header("Location: bookedspace.php");
+header("Location: dummy_payment.php?space_id=$space_id");
+
 exit();
+?>

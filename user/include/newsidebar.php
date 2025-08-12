@@ -45,21 +45,39 @@
             <span class="nav-link-text ms-1">Dashboard</span>
           </a>
         </li>
+
         <li class="nav-item mt-3">
           <h6 class="ps-4 ms-2 text-uppercase text-xs font-weight-bolder opacity-6">Services</h6>
         </li>
+
+        <!-- Add Space submenu -->
         <li class="nav-item">
           <a class="nav-link" href="javascript:void(0);" onclick="toggleSubmenu('add-space-submenu')">
             <div class="icon icon-shape icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center">
               <i class="fa fa-plus text-dark text-lg"></i>
             </div>
-            <span class="nav-link-text ms-1">Add</span>
+            <span class="nav-link-text ms-1">Add Space</span>
           </a>
           <ul class="submenu" id="add-space-submenu">
             <li><a class="nav-link" href="addspace2.php" id="submenu-item">Add Space</a></li>
             <li><a class="nav-link" href="myspace.php" id="submenu-item">My Space</a></li>
           </ul>
         </li>
+
+        <!-- Add Vehicle submenu -->
+        <li class="nav-item">
+          <a class="nav-link" href="javascript:void(0);" onclick="toggleSubmenu('add-vehicle-submenu')">
+            <div class="icon icon-shape icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center">
+              <i class="fa fa-car text-dark text-lg"></i>
+            </div>
+            <span class="nav-link-text ms-1">Add Vehicle</span>
+          </a>
+          <ul class="submenu" id="add-vehicle-submenu">
+            <li><a class="nav-link" href="add_vehicle.php" id="submenu-item">Add Vehicle</a></li>
+            <li><a class="nav-link" href="manage_vehicles.php" id="submenu-item">Manage Vehicles</a></li>
+          </ul>
+        </li>
+
         <li class="nav-item">
           <a class="nav-link" href="javascript:void(0);" onclick="toggleSubmenu('search-space-submenu')">
             <div class="icon icon-shape icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center">
@@ -72,6 +90,7 @@
             <li><a class="nav-link" href="bookedspace.php" id="submenu-item">Booked Space</a></li>
           </ul>
         </li>
+
         <li class="nav-item">
           <a class="nav-link" href="setting.php">
             <div class="icon icon-shape icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center">
@@ -80,6 +99,7 @@
             <span class="nav-link-text ms-1">Settings</span>
           </a>
         </li>
+
         <li class="nav-item">
           <a class="nav-link" href="aboutus.php">
             <div class="icon icon-shape icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center">
