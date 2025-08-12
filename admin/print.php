@@ -3,19 +3,33 @@ require '../config/function.php';
 
 $cid = isset($_GET['vid']) ? intval($_GET['vid']) : 0;
 
+// Query to get vehicle info with user info and latest booking info (from userspace)
 $query = "
     SELECT 
-        tblvehicle.*,
-        users.name AS OwnerName,
-        users.phone AS OwnerContactNumber
-    FROM tblvehicle
-    LEFT JOIN users ON tblvehicle.UserId = users.id
-    WHERE tblvehicle.ID = $cid
+        v.ParkingNumber,
+        v.VehicleCategory,
+        v.VehicleCompanyname,
+        v.RegistrationNumber,
+        u.name AS OwnerName,
+        u.phone AS OwnerContactNumber,
+        us.StartTime AS InTime,
+        us.EndTime AS OutTime,
+        us.status AS BookingStatus,
+        us.ParkingFees
+    FROM tblvehicle v
+    LEFT JOIN users u ON v.UserId = u.id
+    LEFT JOIN userspace us ON us.vehicle_id = v.ID
+    WHERE v.ID = ?
+    ORDER BY us.StartTime DESC
+    LIMIT 1
 ";
 
-$ret = mysqli_query($conn, $query);
+$stmt = $conn->prepare($query);
+$stmt->bind_param("i", $cid);
+$stmt->execute();
+$ret = $stmt->get_result();
 
-while ($row = mysqli_fetch_array($ret)) {
+if ($row = $ret->fetch_assoc()) {
 ?>
 
 <div id="exampl">
@@ -52,33 +66,27 @@ while ($row = mysqli_fetch_array($ret)) {
             <th>Status</th>
             <td>
                 <?php
-                if ($row['Status'] == "") {
+                if ($row['BookingStatus'] === '1') {
                     echo "Incoming Vehicle";
-                } elseif ($row['Status'] == "Out") {
+                } elseif ($row['BookingStatus'] === '0') {
                     echo "Outgoing Vehicle";
                 } else {
-                    echo htmlspecialchars($row['Status']);
+                    echo "Unknown";
                 }
                 ?>
             </td>
         </tr>
 
-        <?php if (!empty($row['Remark'])) { ?>
         <tr>
             <th>Out Time</th>
-            <td><?= htmlspecialchars($row['OutTime']); ?></td>
+            <td><?= htmlspecialchars($row['OutTime'] ?: 'N/A'); ?></td>
             <th>Parking Charge</th>
-            <td><?= htmlspecialchars($row['ParkingCharge']); ?></td>
+            <td><?= htmlspecialchars(number_format($row['ParkingFees'], 2)); ?></td>
         </tr>
-        <tr>
-            <th>Remark</th>
-            <td colspan="3"><?= htmlspecialchars($row['Remark']); ?></td>
-        </tr>
-        <?php } ?>
 
         <tr>
-            <td colspan="4" style="text-align:center; cursor:pointer">
-                <i class="fa fa-print fa-2x" aria-hidden="true" onclick="CallPrint()"></i>
+            <td colspan="4" style="text-align:center; cursor:pointer;">
+                <i class="fa fa-print fa-2x" aria-hidden="true" onclick="CallPrint()" style="cursor:pointer;"></i>
             </td>
         </tr>
     </table>
@@ -87,53 +95,49 @@ while ($row = mysqli_fetch_array($ret)) {
 
 <script>
 function CallPrint() {
-    var prtContent = document.getElementById("exampl").cloneNode(true);
-
-    // Remove the print icon row from cloned content
-    var printIconRow = prtContent.querySelector('tr:last-child');
-    if(printIconRow) {
-        printIconRow.remove();
+    var prtContent = document.getElementById("exampl");
+    if (!prtContent) {
+        alert("Print content not found!");
+        return;
     }
 
-    var WinPrint = window.open('', '', 'left=0,top=0,width=800,height=900,toolbar=0,scrollbars=0,status=0');
+    var WinPrint = window.open('', '', 'width=900,height=650');
 
-    WinPrint.document.write(`
-        <html>
-        <head>
-            <title>Print Vehicle Receipt</title>
-            <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.1.3/dist/css/bootstrap.min.css">
-            <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css">
-            <style>
-                body { margin: 20px; }
-                table { width: 100%; border-collapse: collapse; }
-                th, td { border: 1px solid #000; padding: 8px; }
-                th { background-color: #f0f0f0; }
-            </style>
-        </head>
-        <body>
-            ${prtContent.innerHTML}
-        </body>
-        </html>
-    `);
+    var html = `
+    <html>
+    <head>
+        <title>Print Vehicle Receipt</title>
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.1.3/dist/css/bootstrap.min.css" />
+        <style>
+            body { margin: 20px; }
+            table { width: 100%; border-collapse: collapse; }
+            th, td { border: 1px solid #000; padding: 8px; }
+            th { background-color: #f0f0f0; }
+        </style>
+    </head>
+    <body>
+        ${prtContent.innerHTML}
+    </body>
+    </html>`;
 
+    WinPrint.document.write(html);
     WinPrint.document.close();
     WinPrint.focus();
 
-    setTimeout(() => {
+    WinPrint.onload = function() {
         WinPrint.print();
         WinPrint.close();
-    }, 500);
+    };
 }
-
 </script>
 
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/normalize.css@8.0.0/normalize.min.css">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.1.3/dist/css/bootstrap.min.css">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css">
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/lykmapipo/themify-icons@0.1.2/css/themify-icons.css">
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pixeden-stroke-7-icon@1.2.3/pe-icon-7-stroke/dist/pe-icon-7-stroke.min.css">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/flag-icon-css/3.2.0/css/flag-icon.min.css">
-<link rel="stylesheet" href="assets/css/cs-skin-elastic.css">
-<link rel="stylesheet" href="assets/css/style.css">
 
-<?php } // end while loop ?>
+<?php
+} else {
+    echo "No vehicle found with the given ID.";
+}
+$stmt->close();
+?>

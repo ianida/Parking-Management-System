@@ -82,7 +82,7 @@ if (isset($_GET['del'])) {
         if(msg) {
             msg.style.display = 'none';
         }
-    }, 5000); // 5 seconds
+    }, 3000); // 3 seconds
 </script>
 
 <?php include('include/footer.php'); ?>

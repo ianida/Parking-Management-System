@@ -1,7 +1,8 @@
-<?php include('include/header.php'); ?>
+<!-- 
+<?php //include('include/header.php'); ?>
 
 <?php
-$catid = isset($_GET['del']) ? $_GET['del'] : 0;
+/*$catid = isset($_GET['del']) ? $_GET['del'] : 0;
 if (!empty($catid)) {
     $catid = mysqli_real_escape_string($conn, $catid);
     $query = "DELETE FROM tblvehicle WHERE ID = '$catid'";
@@ -66,4 +67,5 @@ if (!empty($catid)) {
     </div>
 </div>
 
-<?php include('include/footer.php'); ?>
+<?php include('include/footer.php'); ?> -->
+*/

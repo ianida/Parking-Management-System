@@ -1,7 +1,7 @@
-<?php include('include/header.php'); ?>
+<!-- <?php //include('include/header.php'); ?>
 
 <?php
-if (isset($_POST['submit'])) {
+/*if (isset($_POST['submit'])) {
     $cid = $_GET['viewid'];
     $remark = $_POST['remark'];
     $status = $_POST['status'];
@@ -127,4 +127,5 @@ if (isset($_POST['submit'])) {
     </div>
 </div>
 
-<?php include('include/footer.php'); ?>
+<?php include('include/footer.php'); ?> -->
+*/

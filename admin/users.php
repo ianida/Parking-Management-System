@@ -6,6 +6,7 @@ if (!isset($_SESSION['auth']) || $_SESSION['loggedInUserRole'] !== 'admin') {
     header('Location: ../loginform.php'); // redirect non-admin users
     exit;
 }
+
 ?>
 
 <div class="row"></div>
@@ -19,7 +20,7 @@ if (!isset($_SESSION['auth']) || $_SESSION['loggedInUserRole'] !== 'admin') {
         </div>
         <div class="card-body">
 
-        <?= alertMessage(); ?>
+        <?php alertMessage(); ?>
 
         <table class="table table-bordered table-striped">
             <thead>
@@ -52,10 +53,8 @@ if (!isset($_SESSION['auth']) || $_SESSION['loggedInUserRole'] !== 'admin') {
                         <a href="users-edit.php?id=<?= urlencode($userItem['id']); ?>" class="btn btn-success btn-sm">Edit</a>
                         <a href="users-delete.php?id=<?= urlencode($userItem['id']); ?>" 
                            class="btn btn-danger btn-sm mx-2"
-                           onclick="return confirm('Are you sure you want to delete this data?')"
                            > Delete</a>
                     </td>
-
                 </tr>
                         <?php
                     }
@@ -76,5 +75,18 @@ if (!isset($_SESSION['auth']) || $_SESSION['loggedInUserRole'] !== 'admin') {
         </div>
     </div>
 </div>
+
+<script>
+  window.addEventListener('DOMContentLoaded', () => {
+    const alertBox = document.querySelector('.alert');
+    if (alertBox) {
+      setTimeout(() => {
+        alertBox.style.transition = "opacity 0.5s ease";
+        alertBox.style.opacity = '0';
+        setTimeout(() => alertBox.remove(), 500);
+      }, 1700); // 1.7 seconds
+    }
+  });
+</script>
 
 <?php include('include/footer.php'); ?>

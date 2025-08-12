@@ -1,4 +1,4 @@
-<?php include('include/header.php'); ?>
+<!-- <?php //include('include/header.php'); ?>
 
 <div class="container">
     <div class="row">
@@ -10,7 +10,7 @@
                 <div class="card-body">
 
                     <?php
-                    $cid = $_GET['viewid'];
+                    /*$cid = $_GET['viewid'];
                     $ret = mysqli_query($conn, "
                         SELECT tblvehicle.*, users.name AS OwnerName, users.phone AS OwnerContactNumber
                         FROM tblvehicle
@@ -74,4 +74,5 @@
     </div>
 </div><!-- .animated -->
 
-<?php include('include/footer.php'); ?>
+<?php include('include/footer.php'); ?> -->
+*/

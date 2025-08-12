@@ -84,17 +84,17 @@
       </li>
 
       <!-- Add Vehicle (no submenu) -->
-      <li class="nav-item">
+      <!-- <li class="nav-item">
         <a class="nav-link" href="add-vehicle.php">
           <div class="icon icon-shape icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center">
             <i class="fa fa-plus text-dark text-lg"></i>
           </div>
           <span class="nav-link-text ms-1">Add Vehicle</span>
         </a>
-      </li>
+      </li> -->
 
       <!-- Manage Vehicle In/Out (click-to-open submenu) -->
-      <li class="nav-item">
+      <!-- <li class="nav-item">
         <a class="nav-link" href="javascript:void(0);" onclick="toggleSubmenu('manage-vehicle-submenu')" aria-expanded="false">
           <div class="icon icon-shape icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center">
             <i class="fa fa-list-ul text-dark text-lg"></i>
@@ -119,7 +119,7 @@
             </a>
           </li>
         </ul>
-      </li>
+      </li> -->
 
       <!-- Search Vehicle -->
       <li class="nav-item">
@@ -153,7 +153,7 @@
     margin: 6px 0 6px 0;
   }
 
-  /* Show when open - !important to override other theme rules */
+  /* Show when open */
   .pcoded-submenu.open {
     display: block !important;
   }
@@ -170,7 +170,7 @@
   }
 </style>
 
-<!-- Toggle JS (same behavior as newsidebar.php) -->
+<!-- Toggle JS -->
 <script>
   function toggleSubmenu(id) {
     var submenu = document.getElementById(id);
