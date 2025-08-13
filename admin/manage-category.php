@@ -61,7 +61,6 @@ if (isset($_GET['del'])) {
                                         <a href="edit-category.php?editid=<?php echo $row['ID']; ?>" class="btn btn-primary">Edit</a>
                                         <a href="manage-category.php?del=<?php echo $row['ID']; ?>" class="btn btn-danger">Delete</a>
                                     </td>
-
                                 </tr>
                                 <?php
                                 $cnt++;
@@ -74,6 +73,24 @@ if (isset($_GET['del'])) {
         </div>
     </div>
 </div>
+
+<style>
+    table.table thead th {
+  text-align: center;
+}
+  /* Center all cells in tbody horizontally */
+  table.table tbody td {
+    text-align: center;
+    padding-left: 100px;  /* increase */
+    padding-right: 100px; /* increase */
+  }
+
+  /* Optional: widen space between columns */
+  table.table th, table.table td {
+    padding-left: 25px;
+    padding-right: 25px;
+  }
+</style>
 
 <script>
     // Hide the success message after 3 seconds
