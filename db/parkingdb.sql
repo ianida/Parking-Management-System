@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Aug 13, 2025 at 01:17 PM
+-- Generation Time: Aug 13, 2025 at 02:53 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -65,8 +65,10 @@ INSERT INTO `space` (`space_id`, `user_id`, `lat`, `lng`, `vehicletype`, `locati
 (7, 3, '27.694634128', '85.32078932', 'Car', 'ANNAPURNA', '1'),
 (8, 2, '27.695676505', '85.320704287', 'Motorbike', 'MHP', '1'),
 (11, 5, '27.692162169', '85.32553831', 'Motorbike', 'Kathmandu District Court', '0'),
-(12, 6, '27.696080238', '85.321283644', 'Motorbike', 'Department of Archaeology', '0'),
-(13, 6, '27.696995994', '85.321850328', 'Car', 'Supreme Court', '0');
+(12, 6, '27.696080238', '85.321283644', 'Motorbike', 'Department of Archaeology', '1'),
+(13, 6, '27.696995994', '85.321850328', 'Car', 'Supreme Court', '0'),
+(17, 5, '27.6734454', '85.325035', 'Motorbike', 'Patan Durbar Square', '0'),
+(19, 5, '27.6696351', '85.3300728', 'Motorbike', 'Dupat', '0');
 
 -- --------------------------------------------------------
 
@@ -180,7 +182,9 @@ INSERT INTO `userspace` (`userid`, `spaceid`, `vehicle_id`, `userSpaceId`, `stat
 (6, 11, 7, 17, '0', '2025-08-12 23:44:55', '2025-08-12 23:45:17', 500.00, 81, NULL),
 (5, 12, 6, 18, '0', '2025-08-13 16:02:30', '2025-08-13 16:17:31', 500.00, 637, NULL),
 (5, 12, 6, 19, '0', '2025-08-13 16:31:12', '2025-08-13 17:00:13', 500.00, 55, NULL),
-(5, 13, 12, 20, '0', '2025-08-13 16:31:44', '2025-08-13 17:00:37', 500.00, 632, NULL);
+(5, 13, 12, 20, '0', '2025-08-13 16:31:44', '2025-08-13 17:00:37', 500.00, 632, NULL),
+(5, 12, 6, 22, '1', '2025-08-13 18:31:27', NULL, 0.00, 855, NULL),
+(6, 19, 7, 23, '0', '2025-08-13 18:34:49', '2025-08-13 18:36:23', 500.00, 405, NULL);
 
 --
 -- Indexes for dumped tables
@@ -243,7 +247,7 @@ ALTER TABLE `email_verifications`
 -- AUTO_INCREMENT for table `space`
 --
 ALTER TABLE `space`
-  MODIFY `space_id` int(3) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
+  MODIFY `space_id` int(3) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=20;
 
 --
 -- AUTO_INCREMENT for table `tblcategory`
@@ -267,7 +271,7 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT for table `userspace`
 --
 ALTER TABLE `userspace`
-  MODIFY `userSpaceId` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=21;
+  MODIFY `userSpaceId` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=24;
 
 --
 -- Constraints for dumped tables
