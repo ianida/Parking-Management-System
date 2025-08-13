@@ -3,10 +3,10 @@ require '../config/function.php';
 
 $cid = isset($_GET['vid']) ? intval($_GET['vid']) : 0;
 
-// Query to get vehicle info with user info and latest booking info (from userspace)
 $query = "
     SELECT 
-        v.ParkingNumber,
+        us.ParkingNumber,
+        v.VehicleModel,
         v.VehicleCategory,
         v.VehicleCompanyname,
         v.RegistrationNumber,
@@ -16,12 +16,11 @@ $query = "
         us.EndTime AS OutTime,
         us.status AS BookingStatus,
         us.ParkingFees
-    FROM tblvehicle v
+    FROM userspace us
+    LEFT JOIN tblvehicle v ON us.vehicle_id = v.ID
     LEFT JOIN users u ON v.UserId = u.id
-    LEFT JOIN userspace us ON us.vehicle_id = v.ID
     WHERE v.ID = ?
     ORDER BY us.StartTime DESC
-    LIMIT 1
 ";
 
 $stmt = $conn->prepare($query);
@@ -29,19 +28,23 @@ $stmt->bind_param("i", $cid);
 $stmt->execute();
 $ret = $stmt->get_result();
 
-if ($row = $ret->fetch_assoc()) {
+if ($ret->num_rows === 0) {
+    echo "No bookings found for this vehicle.";
+    $stmt->close();
+    exit();
+}
 ?>
 
 <div id="exampl">
-
-    <table border="1" class="table table-bordered mg-b-0">
+    <?php while ($row = $ret->fetch_assoc()): ?>
+    <table border="1" class="table table-bordered mb-4">
         <tr>
             <th colspan="4" style="text-align: center; font-size:22px;">Vehicle Parking Receipt</th>
         </tr>
 
         <tr>
             <th>Parking Number</th>
-            <td><?= htmlspecialchars($row['ParkingNumber']); ?></td>
+            <td><?= htmlspecialchars($row['ParkingNumber'] ?: 'N/A'); ?></td>
             <th>Vehicle Category</th>
             <td><?= htmlspecialchars($row['VehicleCategory']); ?></td>
         </tr>
@@ -49,7 +52,7 @@ if ($row = $ret->fetch_assoc()) {
         <tr>
             <th>Vehicle Company Name</th>
             <td><?= htmlspecialchars($row['VehicleCompanyname']); ?></td>
-            <th>Registration Number</th>
+            <th>Registration<br>Number</th>
             <td><?= htmlspecialchars($row['RegistrationNumber']); ?></td>
         </tr>
 
@@ -65,44 +68,33 @@ if ($row = $ret->fetch_assoc()) {
             <td><?= htmlspecialchars($row['InTime']); ?></td>
             <th>Status</th>
             <td>
-                <?php
-                if ($row['BookingStatus'] === '1') {
-                    echo "Incoming Vehicle";
-                } elseif ($row['BookingStatus'] === '0') {
-                    echo "Outgoing Vehicle";
-                } else {
-                    echo "Unknown";
-                }
-                ?>
+                <?= ($row['BookingStatus'] === '1') ? 'Incoming Vehicle' : (($row['BookingStatus'] === '0') ? 'Outgoing Vehicle' : 'Unknown'); ?>
             </td>
         </tr>
 
         <tr>
             <th>Out Time</th>
             <td><?= htmlspecialchars($row['OutTime'] ?: 'N/A'); ?></td>
-            <th>Parking Charge</th>
+            <th>Parking Fees<br>(Paid)</th>
             <td><?= htmlspecialchars(number_format($row['ParkingFees'], 2)); ?></td>
         </tr>
 
         <tr>
             <td colspan="4" style="text-align:center; cursor:pointer;">
-                <i class="fa fa-print fa-2x" aria-hidden="true" onclick="CallPrint()" style="cursor:pointer;"></i>
+                <i class="fa fa-print fa-2x" aria-hidden="true" onclick="CallPrint(this)" style="cursor:pointer;"></i>
             </td>
         </tr>
     </table>
-
+    <?php endwhile; ?>
 </div>
 
 <script>
-function CallPrint() {
-    var prtContent = document.getElementById("exampl");
-    if (!prtContent) {
-        alert("Print content not found!");
-        return;
-    }
+function CallPrint(el) {
+    // Print only the table clicked
+    var prtContent = el.closest('table');
+    if (!prtContent) { alert("Print content not found!"); return; }
 
     var WinPrint = window.open('', '', 'width=900,height=650');
-
     var html = `
     <html>
     <head>
@@ -116,18 +108,14 @@ function CallPrint() {
         </style>
     </head>
     <body>
-        ${prtContent.innerHTML}
+        ${prtContent.outerHTML}
     </body>
     </html>`;
 
     WinPrint.document.write(html);
     WinPrint.document.close();
     WinPrint.focus();
-
-    WinPrint.onload = function() {
-        WinPrint.print();
-        WinPrint.close();
-    };
+    WinPrint.onload = function() { WinPrint.print(); WinPrint.close(); };
 }
 </script>
 
@@ -135,9 +123,4 @@ function CallPrint() {
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.1.3/dist/css/bootstrap.min.css">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css">
 
-<?php
-} else {
-    echo "No vehicle found with the given ID.";
-}
-$stmt->close();
-?>
+<?php $stmt->close(); ?>

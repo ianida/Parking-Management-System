@@ -33,8 +33,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     } else {
         $parkingNumber = 0;  // default value
 
-        $stmt = $conn->prepare("INSERT INTO tblvehicle (UserId, Color, VehicleModel, VehicleCategory, VehicleCompanyname, RegistrationNumber, ParkingNumber) VALUES (?, ?, ?, ?, ?, ?, ?)");
-        $stmt->bind_param("issssss", $userId, $color, $vehicleModel, $vehicleCategory, $vehicleCompany, $registrationNumber, $parkingNumber);
+        $stmt = $conn->prepare("INSERT INTO tblvehicle (UserId, Color, VehicleModel, VehicleCategory, VehicleCompanyname, RegistrationNumber) VALUES (?, ?, ?, ?, ?, ?)");
+        $stmt->bind_param("isssss", $userId, $color, $vehicleModel, $vehicleCategory, $vehicleCompany, $registrationNumber);
+
 
         if ($stmt->execute()) {
             $message = "Vehicle added successfully.";

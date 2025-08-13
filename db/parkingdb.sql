@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Aug 12, 2025 at 09:15 AM
+-- Generation Time: Aug 13, 2025 at 01:17 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -65,7 +65,8 @@ INSERT INTO `space` (`space_id`, `user_id`, `lat`, `lng`, `vehicletype`, `locati
 (7, 3, '27.694634128', '85.32078932', 'Car', 'ANNAPURNA', '1'),
 (8, 2, '27.695676505', '85.320704287', 'Motorbike', 'MHP', '1'),
 (11, 5, '27.692162169', '85.32553831', 'Motorbike', 'Kathmandu District Court', '0'),
-(12, 6, '27.696080238', '85.321283644', 'Motorbike', 'Department of Archaeology', '0');
+(12, 6, '27.696080238', '85.321283644', 'Motorbike', 'Department of Archaeology', '0'),
+(13, 6, '27.696995994', '85.321850328', 'Car', 'Supreme Court', '0');
 
 -- --------------------------------------------------------
 
@@ -88,7 +89,8 @@ INSERT INTO `tblcategory` (`ID`, `VehicleCat`, `CreationDate`, `FID`) VALUES
 (1, 'Car', '2025-08-10 09:01:43', 1),
 (2, 'Motorbike', '2025-08-10 09:01:43', 2),
 (3, 'Truck', '2025-08-10 09:01:43', 3),
-(4, 'Bicycle', '2025-08-10 10:17:16', NULL);
+(4, 'Bicycle', '2025-08-10 10:17:16', NULL),
+(5, 'Micro-Bus', '2025-08-12 17:05:37', NULL);
 
 -- --------------------------------------------------------
 
@@ -103,18 +105,19 @@ CREATE TABLE `tblvehicle` (
   `VehicleModel` varchar(100) NOT NULL,
   `VehicleCategory` varchar(120) DEFAULT NULL,
   `VehicleCompanyname` varchar(120) DEFAULT NULL,
-  `RegistrationNumber` varchar(120) DEFAULT NULL,
-  `ParkingNumber` int(11) NOT NULL
+  `RegistrationNumber` varchar(120) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `tblvehicle`
 --
 
-INSERT INTO `tblvehicle` (`ID`, `UserId`, `Color`, `VehicleModel`, `VehicleCategory`, `VehicleCompanyname`, `RegistrationNumber`, `ParkingNumber`) VALUES
-(1, 2, 'Red', 'Land Cruser', 'Car', 'Toyota', 'BA-2-CHA-1234', 0),
-(2, 3, 'Black', 'Hornet', 'Motorbike', 'Honda', 'BA-5-PA-5678', 0),
-(6, 5, 'Black', 'Honda Shine', 'Motorbike', 'Honda', 'BA-5-PA-5340', 0);
+INSERT INTO `tblvehicle` (`ID`, `UserId`, `Color`, `VehicleModel`, `VehicleCategory`, `VehicleCompanyname`, `RegistrationNumber`) VALUES
+(1, 2, 'Red', 'Land Cruser', 'Car', 'Toyota', 'BA-2-CHA-1234'),
+(2, 3, 'Black', 'Hornet', 'Motorbike', 'Honda', 'BA-5-PA-5678'),
+(6, 5, 'Grey', 'Honda Shine', 'Motorbike', 'Honda', 'BA-5-PA-5340'),
+(7, 6, 'Blue', 'Hunter 350', 'Motorbike', 'Royal Enfield', 'BA-2-CHA-9870'),
+(12, 5, 'Purple', 'BYD Dolphin', 'Car', 'BYD', 'BA-5-PA-1590');
 
 -- --------------------------------------------------------
 
@@ -139,9 +142,9 @@ CREATE TABLE `users` (
 
 INSERT INTO `users` (`id`, `username`, `name`, `email`, `phone`, `password`, `role`, `Created_date`) VALUES
 (1, 'admin', 'Admin User', 'admin@example.com', '9800000000', 'admin123', 'admin', '2025-08-10'),
-(2, 'john_doe', 'John Doe', 'john@example.com', '9800000010', 'john123', 'user', '2025-08-01'),
+(2, 'john_doe', 'John Doe', 'john@example.com', '9800000555', 'john123', 'user', '2025-08-01'),
 (3, 'mary_smith', 'Mary Smith', 'mary@example.com', '9800000002', 'mary123', 'user', '2025-08-05'),
-(5, 'm.kim', 'mkim User', 'mkim013@proton.me', '9841000456', 'ForMkim013', 'user', '2025-08-10'),
+(5, 'm.kim', 'mkim User', 'mkim013@proton.me', '9841567851', 'ForMkim013', 'user', '2025-08-10'),
 (6, 'rojarmhj', 'Rojar Maharjan', 'rojarmhj@proton.me', '9841600003', 'ForRojar1', 'user', '2025-08-10');
 
 -- --------------------------------------------------------
@@ -159,6 +162,7 @@ CREATE TABLE `userspace` (
   `StartTime` datetime NOT NULL DEFAULT current_timestamp(),
   `EndTime` datetime DEFAULT NULL,
   `ParkingFees` decimal(10,2) NOT NULL,
+  `ParkingNumber` int(11) DEFAULT NULL,
   `vehicleCategoryId` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
@@ -166,12 +170,17 @@ CREATE TABLE `userspace` (
 -- Dumping data for table `userspace`
 --
 
-INSERT INTO `userspace` (`userid`, `spaceid`, `vehicle_id`, `userSpaceId`, `status`, `StartTime`, `EndTime`, `ParkingFees`, `vehicleCategoryId`) VALUES
-(2, 7, 1, 5, '1', '2025-08-12 06:57:07', '2025-08-12 06:57:07', 0.00, NULL),
-(3, 8, 2, 6, '1', '2025-08-12 06:57:07', '2025-08-12 06:57:07', 0.00, NULL),
-(5, 12, 6, 13, '0', '2025-08-12 12:36:30', '2025-08-12 12:37:47', 0.00, NULL),
-(5, 12, 6, 14, '0', '2025-08-12 12:46:16', '2025-08-12 12:46:49', 0.00, NULL),
-(5, 12, 6, 15, '0', '2025-08-12 12:54:41', '2025-08-12 12:56:09', 500.00, NULL);
+INSERT INTO `userspace` (`userid`, `spaceid`, `vehicle_id`, `userSpaceId`, `status`, `StartTime`, `EndTime`, `ParkingFees`, `ParkingNumber`, `vehicleCategoryId`) VALUES
+(2, 7, 1, 5, '1', '2025-08-12 06:57:07', '2025-08-12 06:57:07', 0.00, 3, NULL),
+(3, 8, 2, 6, '1', '2025-08-12 06:57:07', '2025-08-12 06:57:07', 0.00, 665, NULL),
+(5, 12, 6, 13, '0', '2025-08-12 12:36:30', '2025-08-12 12:37:47', 0.00, 10, NULL),
+(5, 12, 6, 14, '0', '2025-08-12 12:46:16', '2025-08-12 12:46:49', 0.00, 879, NULL),
+(5, 12, 6, 15, '0', '2025-08-12 12:54:41', '2025-08-12 12:56:09', 500.00, 729, NULL),
+(6, 11, 7, 16, '0', '2025-08-12 23:34:11', '2025-08-12 23:34:54', 500.00, 498, NULL),
+(6, 11, 7, 17, '0', '2025-08-12 23:44:55', '2025-08-12 23:45:17', 500.00, 81, NULL),
+(5, 12, 6, 18, '0', '2025-08-13 16:02:30', '2025-08-13 16:17:31', 500.00, 637, NULL),
+(5, 12, 6, 19, '0', '2025-08-13 16:31:12', '2025-08-13 17:00:13', 500.00, 55, NULL),
+(5, 13, 12, 20, '0', '2025-08-13 16:31:44', '2025-08-13 17:00:37', 500.00, 632, NULL);
 
 --
 -- Indexes for dumped tables
@@ -214,6 +223,7 @@ ALTER TABLE `users`
 --
 ALTER TABLE `userspace`
   ADD PRIMARY KEY (`userSpaceId`),
+  ADD UNIQUE KEY `ParkingNumber` (`ParkingNumber`),
   ADD KEY `userid` (`userid`),
   ADD KEY `spaceid` (`spaceid`),
   ADD KEY `fk_vehiclecategory` (`vehicleCategoryId`),
@@ -227,37 +237,37 @@ ALTER TABLE `userspace`
 -- AUTO_INCREMENT for table `email_verifications`
 --
 ALTER TABLE `email_verifications`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT for table `space`
 --
 ALTER TABLE `space`
-  MODIFY `space_id` int(3) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
+  MODIFY `space_id` int(3) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
 
 --
 -- AUTO_INCREMENT for table `tblcategory`
 --
 ALTER TABLE `tblcategory`
-  MODIFY `ID` int(10) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `ID` int(10) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT for table `tblvehicle`
 --
 ALTER TABLE `tblvehicle`
-  MODIFY `ID` int(10) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `ID` int(10) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
 
 --
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
 
 --
 -- AUTO_INCREMENT for table `userspace`
 --
 ALTER TABLE `userspace`
-  MODIFY `userSpaceId` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
+  MODIFY `userSpaceId` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=21;
 
 --
 -- Constraints for dumped tables

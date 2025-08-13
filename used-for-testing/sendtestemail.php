@@ -1,9 +1,10 @@
 <?php
 session_start();
 
-require 'PHPMailer/PHPMailer.php';
-require 'PHPMailer/SMTP.php';
-require 'PHPMailer/Exception.php';
+require '../PHPMailer/PHPMailer.php';
+require '../PHPMailer/SMTP.php';
+require '../PHPMailer/Exception.php';
+
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $to_email = trim($_POST['email']);

@@ -86,6 +86,7 @@
               // Query 2 - Vehicle & Booking Details with Vehicle Owner Name
               $query2 = "SELECT 
                   us.userSpaceId,
+                  us.ParkingNumber,
                   v.VehicleModel,
                   v.VehicleCategory,
                   v.VehicleCompanyname,
@@ -106,38 +107,42 @@
               ?>
 
               <h5>Vehicle & Booking Details</h5>
-              <table class="table table-bordered">
-                <thead>
-                  <tr>
-                    <th>S.NO</th>
-                    <th>Vehicle Model</th>
-                    <th>Category</th>
-                    <th>Company Name</th>
-                    <th>Registration Number</th>
-                    <th>Vehicle Owner</th>
-                    <th>Parking Fees (Paid)</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <?php
-                  $cnt = 1;
-                  while ($row = $result2->fetch_assoc()) {
-                  ?>
+              <div style="overflow-x:auto;">
+                <table class="table table-bordered">
+                  <thead>
                     <tr>
-                      <td><?= $cnt ?></td>
-                      <td><?= htmlspecialchars($row['VehicleModel']) ?></td>
-                      <td><?= htmlspecialchars($row['VehicleCategory']) ?></td>
-                      <td><?= htmlspecialchars($row['VehicleCompanyname']) ?></td>
-                      <td><?= htmlspecialchars($row['RegistrationNumber']) ?></td>
-                      <td><?= htmlspecialchars($row['vehicle_owner_name'] ?? 'N/A') ?></td>
-                      <td><?= htmlspecialchars(number_format($row['ParkingFees'], 2)) ?></td>
+                      <th>S.NO</th>
+                      <th>Parking<br>Number</th>
+                      <th>Vehicle Model</th>
+                      <th>Category</th>
+                      <th>Company Name</th>
+                      <th>Registration<br>Number</th>
+                      <th>Vehicle Owner</th>
+                      <th>Parking Fees<br>(Paid)</th>
                     </tr>
-                  <?php
-                    $cnt++;
-                  }
-                  ?>
-                </tbody>
-              </table>
+                  </thead>
+                  <tbody>
+                    <?php
+                    $cnt = 1;
+                    while ($row = $result2->fetch_assoc()) {
+                    ?>
+                      <tr>
+                        <td><?= $cnt ?></td>
+                        <td><?= htmlspecialchars($row['ParkingNumber'] ?: 'N/A') ?></td>
+                        <td><?= htmlspecialchars($row['VehicleModel']) ?></td>
+                        <td><?= htmlspecialchars($row['VehicleCategory']) ?></td>
+                        <td><?= htmlspecialchars($row['VehicleCompanyname']) ?></td>
+                        <td><?= htmlspecialchars($row['RegistrationNumber']) ?></td>
+                        <td><?= htmlspecialchars($row['vehicle_owner_name'] ?? 'N/A') ?></td>
+                        <td><?= htmlspecialchars(number_format($row['ParkingFees'], 2)) ?></td>
+                      </tr>
+                    <?php
+                      $cnt++;
+                    }
+                    ?>
+                  </tbody>
+                </table>
+              </div>
             </div>
 
             <?php
