@@ -1,4 +1,4 @@
-<?php include('include/header.php'); ?>
+<!-- <?php //include('include/header.php'); ?>
 <div class="content">
             <div class="animated fadeIn">
                 <div class="row">
@@ -18,7 +18,7 @@
                                    <p style="text-align: center;"> <button type="submit" class="btn btn-primary btn-sm" name="search" >Search</button></p>
                                 </form>
  <?php
-if(isset($_POST['search']))
+/*if(isset($_POST['search']))
 { 
 $sdata=$_POST['searchdata'];
   ?>
@@ -66,4 +66,5 @@ $cnt=$cnt+1;
     </div>
 </div>
 
-<?php include('include/footer.php'); ?>
+<?php //include('include/footer.php'); ?> -->
+*/
