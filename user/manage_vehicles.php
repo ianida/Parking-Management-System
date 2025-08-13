@@ -65,9 +65,6 @@ document.querySelectorAll('.btn-delete').forEach(function(btn) {
   btn.addEventListener('click', function(e) {
     e.preventDefault();
 
-    // Optional confirm dialog, remove if you want no dialog at all
-    // if (!confirm('Are you sure you want to delete this vehicle?')) return;
-
     const vehicleId = this.getAttribute('data-id');
     const row = this.closest('tr');
 
@@ -83,24 +80,20 @@ document.querySelectorAll('.btn-delete').forEach(function(btn) {
 
       if (data.success) {
         const messageDiv = document.createElement('div');
-        messageDiv.style.padding = '10px';
-        messageDiv.style.backgroundColor = '#d4edda';
-        messageDiv.style.color = '#155724';
-        messageDiv.style.marginBottom = '10px';
-        messageDiv.textContent = data.message;  // <-- No extra text here
+        messageDiv.className = 'alert alert-success';
+        messageDiv.textContent = data.message;
         messageContainer.appendChild(messageDiv);
 
         row.remove();
 
         setTimeout(() => {
-          messageDiv.remove();
-        }, 3000);
+          messageDiv.style.transition = "opacity 0.5s ease";
+          messageDiv.style.opacity = '0';
+          setTimeout(() => messageDiv.remove(), 500);
+        }, 1700);
       } else {
         const errorDiv = document.createElement('div');
-        errorDiv.style.padding = '10px';
-        errorDiv.style.backgroundColor = '#f8d7da';
-        errorDiv.style.color = '#721c24';
-        errorDiv.style.marginBottom = '10px';
+        errorDiv.className = 'alert alert-danger';
         errorDiv.textContent = 'Error: ' + data.message;
         messageContainer.appendChild(errorDiv);
       }
