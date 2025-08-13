@@ -26,7 +26,7 @@
         padding-left: 5px;
         margin-top:5px;
     }
-  </style>
+</style>
 <body>
   
   <aside class="sidenav navbar navbar-vertical navbar-expand-xs border-0 border-radius-xl my-3 fixed-start ms-3" id="sidenav-main">
@@ -80,6 +80,7 @@
           </ul>
         </li>
 
+        <!-- Search submenu -->
         <li class="nav-item">
           <a class="nav-link" href="javascript:void(0);" onclick="toggleSubmenu('search-space-submenu')">
             <div class="icon icon-shape icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center">
@@ -91,6 +92,16 @@
             <li><a class="nav-link" href="searchspace.php" id="submenu-item">Search Space</a></li>
             <li><a class="nav-link" href="bookedspace.php" id="submenu-item">Booked Space</a></li>
           </ul>
+        </li>
+
+        <!-- New Component: Your Balance -->
+        <li class="nav-item">
+          <a class="nav-link" href="userbalance.php">
+            <div class="icon icon-shape icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center">
+              <i class="fa fa-money text-dark text-lg"></i>
+            </div>
+            <span class="nav-link-text ms-1">Your Balance</span>
+          </a>
         </li>
 
         <li class="nav-item">

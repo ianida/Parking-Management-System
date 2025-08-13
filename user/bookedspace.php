@@ -34,6 +34,7 @@ $userid = $_SESSION['id'];
                             <th>Owner Contact</th>
                             <th>Tole Name</th>
                             <th>Location</th>
+                            <th>Owner Info</th>
                             <th>Action</th>
                           </tr></thead><tbody>';
 
@@ -43,13 +44,17 @@ $userid = $_SESSION['id'];
                         $user_name = htmlspecialchars($row['name']);
                         $location = htmlspecialchars($row['location']);
                         $space_id = intval($row['space_id']);
+                        $ownerPhone = htmlspecialchars($row['phone']);
 
                         echo "<tr>
                                 <td>{$user_name}</td>
-                                <td>" . htmlspecialchars($row['phone']) . "</td>
+                                <td>{$ownerPhone}</td>
                                 <td>{$location}</td>
                                 <td>
                                     <a href='https://www.google.com/maps/search/?api=1&query={$lat},{$lng}' target='_blank' class='btn btn-primary btn-sm'>View on Map</a>
+                                </td>
+                                <td>
+                                    <button class='btn btn-info btn-sm' onclick=\"showOwnerDetails('{$user_name}', '{$ownerPhone}')\">See Details</button>
                                 </td>
                                 <td>
                                     <form action='endBooking.php' method='post' class='d-inline'>
@@ -73,5 +78,27 @@ $userid = $_SESSION['id'];
         </div>
     </div>
 </div>
+
+<!-- Owner Details Modal -->
+<div id="ownerModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); z-index:9999; justify-content:center; align-items:center;">
+    <div style="background:white; padding:20px; border-radius:8px; min-width:300px; text-align:center;">
+        <h5>Space Owner Details</h5>
+        <p><strong>Name:</strong> <span id="ownerName"></span></p>
+        <p><strong>Phone:</strong> <span id="ownerPhone"></span></p>
+        <button class="btn btn-primary btn-sm" onclick="closeModal()">Close</button>
+    </div>
+</div>
+
+<script>
+function showOwnerDetails(name, phone) {
+    document.getElementById('ownerName').textContent = name;
+    document.getElementById('ownerPhone').textContent = phone;
+    document.getElementById('ownerModal').style.display = 'flex';
+}
+
+function closeModal() {
+    document.getElementById('ownerModal').style.display = 'none';
+}
+</script>
 
 <?php include('include/footer.php'); ?>
