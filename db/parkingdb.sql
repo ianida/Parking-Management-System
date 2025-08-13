@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Aug 13, 2025 at 02:53 PM
+-- Generation Time: Aug 13, 2025 at 03:58 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -135,19 +135,20 @@ CREATE TABLE `users` (
   `phone` varchar(20) DEFAULT NULL,
   `password` varchar(100) DEFAULT NULL,
   `role` varchar(100) DEFAULT NULL,
-  `Created_date` date DEFAULT NULL
+  `Created_date` date DEFAULT NULL,
+  `balance` decimal(10,2) DEFAULT 0.00
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `users`
 --
 
-INSERT INTO `users` (`id`, `username`, `name`, `email`, `phone`, `password`, `role`, `Created_date`) VALUES
-(1, 'admin', 'Admin User', 'admin@example.com', '9800000000', 'admin123', 'admin', '2025-08-10'),
-(2, 'john_doe', 'John Doe', 'john@example.com', '9800000555', 'john123', 'user', '2025-08-01'),
-(3, 'mary_smith', 'Mary Smith', 'mary@example.com', '9800000002', 'mary123', 'user', '2025-08-05'),
-(5, 'm.kim', 'mkim User', 'mkim013@proton.me', '9841567851', 'ForMkim013', 'user', '2025-08-10'),
-(6, 'rojarmhj', 'Rojar Maharjan', 'rojarmhj@proton.me', '9841600003', 'ForRojar1', 'user', '2025-08-10');
+INSERT INTO `users` (`id`, `username`, `name`, `email`, `phone`, `password`, `role`, `Created_date`, `balance`) VALUES
+(1, 'admin', 'Admin User', 'admin@example.com', '9800000000', 'admin123', 'admin', '2025-08-10', 0.00),
+(2, 'john_doe', 'John Doe', 'john@example.com', '9800000555', 'john123', 'user', '2025-08-01', 0.00),
+(3, 'mary_smith', 'Mary Smith', 'mary@example.com', '9800000002', 'mary123', 'user', '2025-08-05', 0.00),
+(5, 'm.kim', 'mkim User', 'mkim013@proton.me', '9841567851', 'ForMkim013', 'user', '2025-08-10', 0.00),
+(6, 'rojarmhj', 'Rojar Maharjan', 'rojarmhj@proton.me', '9841600003', 'ForRojar1', 'user', '2025-08-10', 0.00);
 
 -- --------------------------------------------------------
 
