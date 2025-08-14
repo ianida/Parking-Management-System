@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Aug 14, 2025 at 09:05 AM
+-- Generation Time: Aug 14, 2025 at 03:31 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -144,7 +144,7 @@ CREATE TABLE `users` (
 --
 
 INSERT INTO `users` (`id`, `username`, `name`, `email`, `phone`, `password`, `role`, `Created_date`, `balance`) VALUES
-(1, 'admin', 'Admin User', 'admin@example.com', '9800000000', 'admin123', 'admin', '2025-08-10', 0.00),
+(1, 'admin', 'Admin User', 'admin@example.com', '9841000089', 'admin123', 'admin', '2025-08-10', 0.00),
 (2, 'john_doe', 'John Doe', 'john@example.com', '9800000555', 'john123', 'user', '2025-08-01', 0.00),
 (3, 'mary_smith', 'Mary Smith', 'mary@example.com', '9800000002', 'mary123', 'user', '2025-08-05', 0.00),
 (5, 'm.kim', 'mkim User', 'mkim013@proton.me', '9841567851', 'ForMkim013', 'user', '2025-08-10', -16.50),
@@ -266,7 +266,7 @@ ALTER TABLE `space`
 -- AUTO_INCREMENT for table `tblcategory`
 --
 ALTER TABLE `tblcategory`
-  MODIFY `ID` int(10) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `ID` int(10) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT for table `tblvehicle`
@@ -278,7 +278,7 @@ ALTER TABLE `tblvehicle`
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
 
 --
 -- AUTO_INCREMENT for table `userspace`
