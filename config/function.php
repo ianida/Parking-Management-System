@@ -75,6 +75,9 @@ function alertMessage()
             <h6>'.htmlspecialchars($_SESSION['status']).'</h6>
         </div>';
 
+         // Remove after showing once
+        unset($_SESSION['status']);
+        unset($_SESSION['status_type']);
     }
 }
 
