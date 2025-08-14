@@ -3,42 +3,42 @@ include('../config/function.php');
 include('include/header.php');
 include('include/dbcon.php');
 
+if(!isset($_SESSION['id'])){
+    header("Location: ../loginform.php");
+    exit();
+}
 $userid = $_SESSION['id'];
 ?>
 
 <div class="row">
     <div class="col-md-12">
         <div class="card mt-3">
-            <div class="card-header">
-                <h4>Your Booked Spaces</h4>
-            </div>
+            <div class="card-header"><h4>Your Booked Spaces</h4></div>
             <div class="card-body">
-
                 <?php
                 $query = "
-                    SELECT *
+                    SELECT userspace.userSpaceId, space.space_id, space.location, space.lat, space.lng, users.name, users.phone
                     FROM userspace
                     INNER JOIN space ON userspace.spaceid = space.space_id
                     INNER JOIN users ON space.user_id = users.id
-                    WHERE userspace.userid = ? AND userspace.status='1'
+                    WHERE userspace.userid=? AND userspace.status='1'
                 ";
                 $stmt = $conn->prepare($query);
-                $stmt->bind_param("s", $userid);
+                $stmt->bind_param("i",$userid);
                 $stmt->execute();
                 $result = $stmt->get_result();
 
-                if ($result->num_rows > 0) {
+                if($result->num_rows >0){
                     echo '<table class="table table-bordered table-striped">';
                     echo '<thead><tr>
                             <th>Space Owner</th>
                             <th>Owner Contact</th>
-                            <th>Tole Name</th>
                             <th>Location</th>
+                            <th>View Map</th>
                             <th>Owner Info</th>
                             <th>Action</th>
                           </tr></thead><tbody>';
-
-                    while ($row = $result->fetch_assoc()) {
+                    while($row=$result->fetch_assoc()){
                         $lat = htmlspecialchars($row['lat']);
                         $lng = htmlspecialchars($row['lng']);
                         $user_name = htmlspecialchars($row['name']);
@@ -54,26 +54,20 @@ $userid = $_SESSION['id'];
                                     <a href='https://www.google.com/maps/search/?api=1&query={$lat},{$lng}' target='_blank' class='btn btn-primary btn-sm'>View on Map</a>
                                 </td>
                                 <td>
-                                    <button class='btn btn-info btn-sm' onclick=\"showOwnerDetails('{$user_name}', '{$ownerPhone}')\">See Details</button>
+                                    <button class='btn btn-info btn-sm' onclick=\"showOwnerDetails('{$user_name}','{$ownerPhone}')\">See Details</button>
                                 </td>
                                 <td>
-                                    <form action='endBooking.php' method='post' class='d-inline'>
-                                        <input type='hidden' name='space_id' value='{$space_id}'>
-                                        <button type='submit' class='btn btn-danger btn-sm'>End Booking</button>
-                                    </form>
+                                    <button class='btn btn-danger btn-sm endBookingBtn' data-spaceid='{$space_id}'>End Booking</button>
                                 </td>
                               </tr>";
                     }
-
                     echo '</tbody></table>';
                 } else {
                     echo '<div class="alert alert-warning">You have no booking to show.</div>';
                 }
-
                 $stmt->close();
                 $conn->close();
                 ?>
-
             </div>
         </div>
     </div>
@@ -89,16 +83,58 @@ $userid = $_SESSION['id'];
     </div>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
-function showOwnerDetails(name, phone) {
-    document.getElementById('ownerName').textContent = name;
-    document.getElementById('ownerPhone').textContent = phone;
-    document.getElementById('ownerModal').style.display = 'flex';
+function showOwnerDetails(name, phone){
+    document.getElementById('ownerName').textContent=name;
+    document.getElementById('ownerPhone').textContent=phone;
+    document.getElementById('ownerModal').style.display='flex';
+}
+function closeModal(){
+    document.getElementById('ownerModal').style.display='none';
 }
 
-function closeModal() {
-    document.getElementById('ownerModal').style.display = 'none';
-}
+// AJAX for ending booking
+$(document).ready(function(){
+    $('.endBookingBtn').click(function(){
+        let spaceId = $(this).data('spaceid');
+        Swal.fire({
+            title: 'Ending Booking...',
+            text: 'Please wait',
+            allowOutsideClick: false,
+            didOpen: () => { Swal.showLoading() }
+        });
+        $.ajax({
+            url: 'endbooking.php',
+            type: 'POST',
+            data: {space_id: spaceId},
+            dataType: 'json',
+            success: function(response){
+                if(response.status=='success'){
+                    Swal.fire({
+                        title:'Booking Ended',
+                        text:'Your fare is Rs. '+response.fare,
+                        icon:'info',
+                        confirmButtonText:'OK'
+                    }).then(()=> location.reload());
+                } else {
+                    Swal.fire('Error',response.message,'error');
+                }
+            },
+            error: function(xhr, status, error){
+                let msg = 'Something went wrong!';
+                try {
+                    let resp = JSON.parse(xhr.responseText);
+                    if(resp.message) msg = resp.message; // show server-provided message
+                } catch(e){}
+                Swal.fire('Error', msg, 'error');
+                console.log(xhr.responseText);
+            }
+
+        });
+    });
+});
 </script>
 
 <?php include('include/footer.php'); ?>

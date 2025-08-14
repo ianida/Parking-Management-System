@@ -26,22 +26,58 @@ function redirect($url, $status, $type = 'success'){
     exit(0);
 }
 
+//static message (doesnt do away until reload or user navigates to another page)
+// function alertMessage()
+// {
+//     if(isset($_SESSION['status']))
+//     {
+//         $type = isset($_SESSION['status_type']) ? $_SESSION['status_type'] : 'success';
+
+//         $class = ($type === 'error') ? 'alert alert-danger' : 'alert alert-success';
+
+//         echo '<div class="'.$class.'"> 
+//         <h6>'.htmlspecialchars($_SESSION['status']).'</h6>
+//         </div>';
+
+//         unset($_SESSION['status']);
+//         unset($_SESSION['status_type']);
+//     }
+// }
+
+// timer message but stiff ui
+// function alertMessage()
+// {
+//     if(isset($_SESSION['status']))
+//     {
+//         $type = isset($_SESSION['status_type']) ? $_SESSION['status_type'] : 'success';
+//         $class = ($type === 'error') ? 'alert alert-danger' : 'alert alert-success';
+
+//         $message = '<div id="alert-msg" class="'.$class.'"> 
+//         <h6>'.htmlspecialchars($_SESSION['status']).'</h6>
+//         </div>';
+
+//         unset($_SESSION['status']);
+//         unset($_SESSION['status_type']);
+
+//         return $message;
+//     }
+//     return '';
+//}
+
 function alertMessage()
 {
     if(isset($_SESSION['status']))
     {
         $type = isset($_SESSION['status_type']) ? $_SESSION['status_type'] : 'success';
-
         $class = ($type === 'error') ? 'alert alert-danger' : 'alert alert-success';
 
-        echo '<div class="'.$class.'"> 
-        <h6>'.htmlspecialchars($_SESSION['status']).'</h6>
+        echo '<div class="'.$class.'" id="alert-msg"> 
+            <h6>'.htmlspecialchars($_SESSION['status']).'</h6>
         </div>';
 
-        unset($_SESSION['status']);
-        unset($_SESSION['status_type']);
     }
 }
+
 
 function getAll($tableName)
 {

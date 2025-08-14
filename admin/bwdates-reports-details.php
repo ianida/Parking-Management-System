@@ -91,7 +91,7 @@
                   v.VehicleCategory,
                   v.VehicleCompanyname,
                   v.RegistrationNumber,
-                  us.ParkingFees,
+                  us.Fare AS ParkingFees,
                   vu.name AS vehicle_owner_name
                 FROM userspace us
                 LEFT JOIN tblvehicle v ON us.vehicle_id = v.ID
@@ -99,6 +99,7 @@
                 WHERE DATE(us.StartTime) BETWEEN ? AND ?
                 ORDER BY us.StartTime DESC
               ";
+
 
               $stmt2 = $conn->prepare($query2);
               $stmt2->bind_param("ss", $fdate, $tdate);
@@ -118,7 +119,7 @@
                       <th>Company Name</th>
                       <th>Registration<br>Number</th>
                       <th>Vehicle Owner</th>
-                      <th>Parking Fees<br>(Paid)</th>
+                      <th>Fare<br>(Unpaid)</th>
                     </tr>
                   </thead>
                   <tbody>

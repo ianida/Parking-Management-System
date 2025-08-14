@@ -10,7 +10,7 @@ require_once '../PHPMailer/PHPMailer.php';
 require_once '../PHPMailer/SMTP.php';
 require_once '../PHPMailer/Exception.php';
 
-// Function to send email using PHPMailer
+// Email function
 function sendEmail($to, $toName, $subject, $body) {
     $mail = new PHPMailer(true);
     try {
@@ -37,6 +37,7 @@ function sendEmail($to, $toName, $subject, $body) {
     }
 }
 
+// Check login
 if (!isset($_SESSION['id'])) {
     header("Location: ../loginform.php");
     exit();
@@ -44,105 +45,98 @@ if (!isset($_SESSION['id'])) {
 
 $userId = $_SESSION['id'];
 $space_id = intval($_POST['space_id'] ?? $_GET['space_id'] ?? 0);
-if ($space_id <= 0) {
-    echo "<div class='alert alert-danger p-3'>Invalid space selected.</div>";
-    exit();
-}
+if ($space_id <= 0) die("Invalid space selected.");
 
+// Fetch space details
 $stmtSpace = $conn->prepare("SELECT lat, lng, location, vehicletype FROM space WHERE space_id = ?");
 $stmtSpace->bind_param("i", $space_id);
 $stmtSpace->execute();
-$resultSpace = $stmtSpace->get_result();
-
-if ($resultSpace->num_rows === 0) {
-    echo "<div class='alert alert-danger p-3'>Selected space does not exist.</div>";
-    exit();
-}
-
-$space = $resultSpace->fetch_assoc();
+$space = $stmtSpace->get_result()->fetch_assoc();
 $stmtSpace->close();
+if (!$space) die("Selected space does not exist.");
 
 $message = "";
 $error = "";
 
+// Booking logic
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['vehicle_id'])) {
     $vehicle_id = intval($_POST['vehicle_id']);
 
-    // Validate vehicle belongs to user
-    $stmtCheckVehicle = $conn->prepare("SELECT ID FROM tblvehicle WHERE ID = ? AND UserId = ?");
-    $stmtCheckVehicle->bind_param("ii", $vehicle_id, $userId);
-    $stmtCheckVehicle->execute();
-    $resCheck = $stmtCheckVehicle->get_result();
+    // Check vehicle belongs to user
+    $stmtVehicle = $conn->prepare("SELECT ID, VehicleCategory FROM tblvehicle WHERE ID=? AND UserId=?");
+    $stmtVehicle->bind_param("ii", $vehicle_id, $userId);
+    $stmtVehicle->execute();
+    $vehicle = $stmtVehicle->get_result()->fetch_assoc();
+    $stmtVehicle->close();
 
-    if ($resCheck->num_rows === 0) {
+    if (!$vehicle) {
         $error = "Invalid vehicle selected.";
     } else {
-        // Update space status = 1 (booked)
-        $updateSpaceQuery = "UPDATE space SET status = 1 WHERE space_id = ?";
-        $stmtUpdateSpace = $conn->prepare($updateSpaceQuery);
+        // Update space status
+        $stmtUpdateSpace = $conn->prepare("UPDATE space SET status=1 WHERE space_id=?");
         $stmtUpdateSpace->bind_param("i", $space_id);
-
-        if ($stmtUpdateSpace->execute()) {
-
-            // --- New: generate unique parking number ---
-            do {
-                $parkingNumber = rand(1, 999);
-                $stmtCheckPN = $conn->prepare("SELECT userSpaceId FROM userspace WHERE ParkingNumber = ? AND status = 1");
-                $stmtCheckPN->bind_param("i", $parkingNumber);
-                $stmtCheckPN->execute();
-                $stmtPNResult = $stmtCheckPN->get_result();
-            } while ($stmtPNResult->num_rows > 0);
-            $stmtCheckPN->close();
-            // -----------------------------------------
-
-            // Insert booking into userspace with ParkingNumber
-            $insertBooking = "INSERT INTO userspace (userid, spaceid, vehicle_id, status, StartTime, EndTime, ParkingNumber, ParkingFees) 
-                              VALUES (?, ?, ?, '1', NOW(), NULL, ?, 0)";
-            $stmtInsert = $conn->prepare($insertBooking);
-            $stmtInsert->bind_param("iiii", $userId, $space_id, $vehicle_id, $parkingNumber);
-
-            if ($stmtInsert->execute()) {
-                // Send emails (unchanged)
-                $sqlOwner = "SELECT u.email, u.name FROM users u JOIN space s ON u.id = s.user_id WHERE s.space_id = ?";
-                $stmtOwner = $conn->prepare($sqlOwner);
-                $stmtOwner->bind_param("i", $space_id);
-                $stmtOwner->execute();
-                $resultOwner = $stmtOwner->get_result();
-                $owner = $resultOwner->fetch_assoc();
-                $stmtOwner->close();
-
-                $sqlUser = "SELECT email, name FROM users WHERE id = ?";
-                $stmtUser = $conn->prepare($sqlUser);
-                $stmtUser->bind_param("i", $userId);
-                $stmtUser->execute();
-                $resultUser = $stmtUser->get_result();
-                $user = $resultUser->fetch_assoc();
-                $stmtUser->close();
-
-                $subjectOwner = "New booking for your parking space";
-                $messageOwner = "Dear " . $owner['name'] . ",\n\nYour parking space has been booked by " . $user['name'] . ".\n\nRegards,\nParking Management System";
-
-                $subjectUser = "Booking Confirmation";
-                $messageUser = "Dear " . $user['name'] . ",\n\nThank you for booking the parking space.\n\nRegards,\nParking Management System";
-
-                sendEmail($owner['email'], $owner['name'], $subjectOwner, $messageOwner);
-                sendEmail($user['email'], $user['name'], $subjectUser, $messageUser);
-
-                $message = "Booking successful! Emails have been sent.";
-            } else {
-                $error = "Error inserting booking record: " . $stmtInsert->error;
-            }
-            $stmtInsert->close();
-        } else {
-            $error = "Error updating space status: " . $stmtUpdateSpace->error;
-        }
+        $stmtUpdateSpace->execute();
         $stmtUpdateSpace->close();
+
+        // Generate unique parking number
+        do {
+            $parkingNumber = rand(1, 999);
+            $stmtCheckPN = $conn->prepare("SELECT userSpaceId FROM userspace WHERE ParkingNumber=? AND status=1");
+            $stmtCheckPN->bind_param("i", $parkingNumber);
+            $stmtCheckPN->execute();
+            $stmtPNResult = $stmtCheckPN->get_result();
+            $stmtCheckPN->close();
+        } while ($stmtPNResult->num_rows > 0);
+
+        $start_time = date('Y-m-d H:i:s');
+
+        // Get vehicleCategoryId from tblcategory
+        $vehicleCategoryId = null;
+        $stmtCat = $conn->prepare("SELECT ID FROM tblcategory WHERE VehicleCat=?");
+        $stmtCat->bind_param("s", $vehicle['VehicleCategory']);
+        $stmtCat->execute();
+        $stmtCat->bind_result($vehicleCategoryId);
+        $stmtCat->fetch();
+        $stmtCat->close();
+
+        // Insert booking
+        $stmtInsert = $conn->prepare("INSERT INTO userspace(userid, spaceid, vehicle_id, status, StartTime, EndTime, ParkingNumber, Fare, vehicleCategoryId) VALUES(?, ?, ?, 1, ?, NULL, ?, 0, ?)");
+        $stmtInsert->bind_param("iiisii", $userId, $space_id, $vehicle_id, $start_time, $parkingNumber, $vehicleCategoryId);
+        if ($stmtInsert->execute()) {
+            $_SESSION['start_time'] = $start_time;
+
+            // Send emails
+            $stmtOwner = $conn->prepare("SELECT u.email, u.name FROM users u JOIN space s ON u.id = s.user_id WHERE s.space_id=?");
+            $stmtOwner->bind_param("i", $space_id);
+            $stmtOwner->execute();
+            $owner = $stmtOwner->get_result()->fetch_assoc();
+            $stmtOwner->close();
+
+            $stmtUser = $conn->prepare("SELECT email, name FROM users WHERE id=?");
+            $stmtUser->bind_param("i", $userId);
+            $stmtUser->execute();
+            $user = $stmtUser->get_result()->fetch_assoc();
+            $stmtUser->close();
+
+            $subjectOwner = "New booking for your parking space";
+            $messageOwner = "Dear " . $owner['name'] . ",\n\nYour parking space has been booked by " . $user['name'] . ".\n\nRegards,\nParking Management System";
+
+            $subjectUser = "Booking Confirmation";
+            $messageUser = "Dear " . $user['name'] . ",\n\nThank you for booking the parking space.\n\nRegards,\nParking Management System";
+
+            sendEmail($owner['email'], $owner['name'], $subjectOwner, $messageOwner);
+            sendEmail($user['email'], $user['name'], $subjectUser, $messageUser);
+
+            $message = "Booking successful! Emails have been sent.";
+        } else {
+            $error = "Error inserting booking record: " . $stmtInsert->error;
+        }
+        $stmtInsert->close();
     }
-    $stmtCheckVehicle->close();
 }
 
-// Fetch user's vehicles for dropdown (unchanged)
-$stmtVehicles = $conn->prepare("SELECT ID, VehicleModel, VehicleCategory, RegistrationNumber FROM tblvehicle WHERE UserId = ?");
+// Fetch user's vehicles
+$stmtVehicles = $conn->prepare("SELECT ID, VehicleModel, VehicleCategory, RegistrationNumber FROM tblvehicle WHERE UserId=?");
 $stmtVehicles->bind_param("i", $userId);
 $stmtVehicles->execute();
 $resultVehicles = $stmtVehicles->get_result();
@@ -150,7 +144,6 @@ $resultVehicles = $stmtVehicles->get_result();
 include('include/header.php');
 ?>
 
-<!-- UI unchanged -->
 <div class="main-content position-relative max-height-vh-100 h-100 border-radius-lg">
   <div class="container-fluid py-4">
     <h2 class="mb-4">Book Parking Space</h2>

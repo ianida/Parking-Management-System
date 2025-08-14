@@ -1,123 +1,153 @@
 <?php
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
+
 session_start();
 include('include/dbcon.php');
+require 'calculate_fare.php';
 
+// PHPMailer includes
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
-
 require_once '../PHPMailer/PHPMailer.php';
 require_once '../PHPMailer/SMTP.php';
 require_once '../PHPMailer/Exception.php';
 
+header('Content-Type: application/json');
+
+// Set timezone to Nepal
+date_default_timezone_set('Asia/Kathmandu');
+
 if (!isset($_SESSION['id'])) {
-    die('User session not found. Please login again.');
+    echo json_encode(['status'=>'error','message'=>'User session not found.']);
+    exit();
 }
 
 if (!isset($_POST['space_id']) || empty($_POST['space_id'])) {
-    die('Space ID is missing.');
+    echo json_encode(['status'=>'error','message'=>'Space ID is missing.']);
+    exit();
 }
 
 $space_id = (int)$_POST['space_id'];
 $user_id = (int)$_SESSION['id'];
 
-// Function to send email using PHPMailer
-function sendEmail($to, $toName, $subject, $body) {
-    $mail = new PHPMailer(true);
+// Get all active bookings for this user and space
+$sql = "SELECT userSpaceId, StartTime, vehicleCategoryId 
+        FROM userspace 
+        WHERE userid=? AND spaceid=? AND EndTime IS NULL";
+$stmt = $conn->prepare($sql);
+$stmt->bind_param("ii", $user_id, $space_id);
+$stmt->execute();
+$result = $stmt->get_result();
 
-    try {
-        $mail->isSMTP();
-        $mail->Host = 'smtp.gmail.com';
-        $mail->SMTPAuth = true;
-        $mail->Username = 'middlebreakfast03@gmail.com';     // Your SMTP username
-        $mail->Password = 'gghobgtyblqtoujt';               // SMTP password or app password
-        $mail->SMTPSecure = 'tls';
-        $mail->Port = 587;
-
-        $mail->setFrom('middlebreakfast03@gmail.com', 'Parking Management System');
-        $mail->addAddress($to, $toName);
-
-        $mail->isHTML(false);
-        $mail->Subject = $subject;
-        $mail->Body    = $body;
-
-        $mail->send();
-        return true;
-    } catch (Exception $e) {
-        error_log("Mail Error: " . $mail->ErrorInfo);
-        return false;
-    }
+if ($result->num_rows === 0) {
+    echo json_encode(['status'=>'error','message'=>'No active booking found']);
+    exit();
 }
 
-// 1. Update space status to 0 (available)
-$query = "UPDATE space SET status = '0' WHERE space_id = ?";
-if ($stmt = $conn->prepare($query)) {
-    $stmt->bind_param("i", $space_id);
-    if (!$stmt->execute()) {
-        die("Failed to update space status: " . $stmt->error);
-    }
-    $stmt->close();
-} else {
-    die("Failed to prepare update statement: " . $conn->error);
+$totalFare = 0;
+while ($booking = $result->fetch_assoc()) {
+    $user_space_id = $booking['userSpaceId'];
+    $start_time = $booking['StartTime'];
+    $vehicle_category_id = $booking['vehicleCategoryId'];
+
+    // Get vehicle type
+    $stmt_vehicle = $conn->prepare("SELECT VehicleCat FROM tblcategory WHERE ID=?");
+    $stmt_vehicle->bind_param("i", $vehicle_category_id);
+    $stmt_vehicle->execute();
+    $stmt_vehicle->bind_result($vehicle_type);
+    $stmt_vehicle->fetch();
+    $stmt_vehicle->close();
+
+    $end_time = date('Y-m-d H:i:s'); // Nepal time
+    $fare = calculateParkingFare($start_time, $end_time, $vehicle_type);
+    $commission = calculateComission($fare);
+
+    // Update userspace
+    $update_sql = "UPDATE userspace SET EndTime=?, Fare=?, status='0' WHERE userSpaceId=?";
+    $update_stmt = $conn->prepare($update_sql);
+    $update_stmt->bind_param("sdi", $end_time, $fare, $user_space_id);
+    $update_stmt->execute();
+    $update_stmt->close();
+
+    // Update user balance
+    $balance_sql = "UPDATE users SET balance = balance + ? WHERE id=?";
+    $bal_stmt = $conn->prepare($balance_sql);
+    $bal_stmt->bind_param("di", $commission, $user_id);
+    $bal_stmt->execute();
+    $bal_stmt->close();
+
+    $totalFare += $fare;
 }
 
-// 2. Update booking record: status=0, EndTime=NOW()
-$updateBooking = "UPDATE userspace 
-                  SET status = '0', EndTime = NOW() 
-                  WHERE userid = ? AND spaceid = ? AND status = '1' 
-                  ORDER BY StartTime DESC LIMIT 1";
-if ($updStmt = $conn->prepare($updateBooking)) {
-    $updStmt->bind_param("ii", $user_id, $space_id);
-    if (!$updStmt->execute()) {
-        die("Failed to update booking record: " . $updStmt->error);
-    }
-    $updStmt->close();
-} else {
-    die("Failed to prepare booking update statement: " . $conn->error);
-}
+// Update space status to unbooked
+$space_sql = "UPDATE space SET status='0' WHERE space_id=?";
+$space_stmt = $conn->prepare($space_sql);
+$space_stmt->bind_param("i", $space_id);
+$space_stmt->execute();
+$space_stmt->close();
 
-// 3. Get owner info for email
-$sqlOwner = "SELECT u.email, u.name FROM users u JOIN space s ON u.id = s.user_id WHERE s.space_id = ?";
-if ($stmtOwner = $conn->prepare($sqlOwner)) {
+// Send JSON response immediately
+ob_clean();
+echo json_encode(['status'=>'success','fare'=>$totalFare]);
+$conn->close();
+flush(); // send response immediately
+
+// Emails sent asynchronously
+try {
+    $conn2 = new mysqli('localhost', 'root', '', 'parkingdb');
+
+    // Owner info
+    $stmtOwner = $conn2->prepare("SELECT u.email, u.name FROM users u JOIN space s ON u.id = s.user_id WHERE s.space_id=?");
     $stmtOwner->bind_param("i", $space_id);
     $stmtOwner->execute();
-    $resultOwner = $stmtOwner->get_result();
-    $owner = $resultOwner->fetch_assoc();
+    $owner = $stmtOwner->get_result()->fetch_assoc();
     $stmtOwner->close();
-} else {
-    die("Failed to prepare owner query: " . $conn->error);
-}
 
-// 4. Get user info for email
-$sqlUser = "SELECT email, name FROM users WHERE id = ?";
-if ($stmtUser = $conn->prepare($sqlUser)) {
+    // User info
+    $stmtUser = $conn2->prepare("SELECT email, name FROM users WHERE id=?");
     $stmtUser->bind_param("i", $user_id);
     $stmtUser->execute();
-    $resultUser = $stmtUser->get_result();
-    $user = $resultUser->fetch_assoc();
+    $user = $stmtUser->get_result()->fetch_assoc();
     $stmtUser->close();
-} else {
-    die("Failed to prepare user query: " . $conn->error);
+    $conn2->close();
+
+    // Mail to owner
+    $mailOwner = new PHPMailer(true);
+    $mailOwner->isSMTP();
+    $mailOwner->Host = 'smtp.gmail.com';
+    $mailOwner->SMTPAuth = true;
+    $mailOwner->Username = 'middlebreakfast03@gmail.com';
+    $mailOwner->Password = 'gghobgtyblqtoujt';
+    $mailOwner->SMTPSecure = 'tls';
+    $mailOwner->Port = 587;
+    $mailOwner->setFrom('middlebreakfast03@gmail.com','Parking Management System');
+    $mailOwner->addAddress($owner['email'],$owner['name']);
+    $mailOwner->isHTML(false);
+    $mailOwner->Subject = "Booking Ended for Your Parking Space";
+    $mailOwner->Body = "Dear {$owner['name']},\n\nThe booking for your parking space has been ended by {$user['name']}.\n\nRegards,\nParking Management System";
+    $mailOwner->send();
+
+    // Mail to user
+    $mailUser = new PHPMailer(true);
+    $mailUser->isSMTP();
+    $mailUser->Host = 'smtp.gmail.com';
+    $mailUser->SMTPAuth = true;
+    $mailUser->Username = 'middlebreakfast03@gmail.com';
+    $mailUser->Password = 'gghobgtyblqtoujt';
+    $mailUser->SMTPSecure = 'tls';
+    $mailUser->Port = 587;
+    $mailUser->setFrom('middlebreakfast03@gmail.com','Parking Management System');
+    $mailUser->addAddress($user['email'],$user['name']);
+    $mailUser->isHTML(false);
+    $mailUser->Subject = "Booking Ended Confirmation";
+    $mailUser->Body = "Dear {$user['name']},\n\nYou have successfully ended the booking for the parking space.\n\nRegards,\nParking Management System";
+    $mailUser->send();
+
+} catch(Exception $e){
+    error_log("Email error: ".$e->getMessage());
 }
-
-// 5. Prepare email content
-$subjectOwner = "Booking Ended for Your Parking Space";
-$messageOwner = "Dear " . $owner['name'] . ",\n\nThe booking for your parking space has been ended by " . $user['name'] . ".\n\nRegards,\nParking Management System";
-
-$subjectUser = "Booking Ended Confirmation";
-$messageUser = "Dear " . $user['name'] . ",\n\nYou have successfully ended the booking for the parking space.\n\nRegards,\nParking Management System";
-
-// 6. Send emails
-sendEmail($owner['email'], $owner['name'], $subjectOwner, $messageOwner);
-sendEmail($user['email'], $user['name'], $subjectUser, $messageUser);
-
-// 7. Set session message and redirect
-$_SESSION['message'] = "Booking Ended Successfully.";
-$_SESSION['message_type'] = "success";
-
-$conn->close();
-
-//header("Location: bookedspace.php");
-header("Location: dummy_payment.php?space_id=$space_id");
 
 exit();
 ?>

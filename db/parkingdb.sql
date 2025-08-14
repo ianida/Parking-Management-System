@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Aug 13, 2025 at 03:58 PM
+-- Generation Time: Aug 14, 2025 at 09:05 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -65,7 +65,7 @@ INSERT INTO `space` (`space_id`, `user_id`, `lat`, `lng`, `vehicletype`, `locati
 (7, 3, '27.694634128', '85.32078932', 'Car', 'ANNAPURNA', '1'),
 (8, 2, '27.695676505', '85.320704287', 'Motorbike', 'MHP', '1'),
 (11, 5, '27.692162169', '85.32553831', 'Motorbike', 'Kathmandu District Court', '0'),
-(12, 6, '27.696080238', '85.321283644', 'Motorbike', 'Department of Archaeology', '1'),
+(12, 6, '27.696080238', '85.321283644', 'Motorbike', 'Department of Archaeology', '0'),
 (13, 6, '27.696995994', '85.321850328', 'Car', 'Supreme Court', '0'),
 (17, 5, '27.6734454', '85.325035', 'Motorbike', 'Patan Durbar Square', '0'),
 (19, 5, '27.6696351', '85.3300728', 'Motorbike', 'Dupat', '0');
@@ -147,8 +147,8 @@ INSERT INTO `users` (`id`, `username`, `name`, `email`, `phone`, `password`, `ro
 (1, 'admin', 'Admin User', 'admin@example.com', '9800000000', 'admin123', 'admin', '2025-08-10', 0.00),
 (2, 'john_doe', 'John Doe', 'john@example.com', '9800000555', 'john123', 'user', '2025-08-01', 0.00),
 (3, 'mary_smith', 'Mary Smith', 'mary@example.com', '9800000002', 'mary123', 'user', '2025-08-05', 0.00),
-(5, 'm.kim', 'mkim User', 'mkim013@proton.me', '9841567851', 'ForMkim013', 'user', '2025-08-10', 0.00),
-(6, 'rojarmhj', 'Rojar Maharjan', 'rojarmhj@proton.me', '9841600003', 'ForRojar1', 'user', '2025-08-10', 0.00);
+(5, 'm.kim', 'mkim User', 'mkim013@proton.me', '9841567851', 'ForMkim013', 'user', '2025-08-10', -16.50),
+(6, 'rojarmhj', 'Rojar Maharjan', 'rojarmhj@proton.me', '9841600003', 'ForRojar1', 'user', '2025-08-10', -39.00);
 
 -- --------------------------------------------------------
 
@@ -164,28 +164,40 @@ CREATE TABLE `userspace` (
   `status` enum('1','0') DEFAULT NULL,
   `StartTime` datetime NOT NULL DEFAULT current_timestamp(),
   `EndTime` datetime DEFAULT NULL,
-  `ParkingFees` decimal(10,2) NOT NULL,
+  `Fare` decimal(10,2) NOT NULL DEFAULT 0.00,
   `ParkingNumber` int(11) DEFAULT NULL,
-  `vehicleCategoryId` int(11) DEFAULT NULL
+  `vehicleCategoryId` int(10) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `userspace`
 --
 
-INSERT INTO `userspace` (`userid`, `spaceid`, `vehicle_id`, `userSpaceId`, `status`, `StartTime`, `EndTime`, `ParkingFees`, `ParkingNumber`, `vehicleCategoryId`) VALUES
-(2, 7, 1, 5, '1', '2025-08-12 06:57:07', '2025-08-12 06:57:07', 0.00, 3, NULL),
-(3, 8, 2, 6, '1', '2025-08-12 06:57:07', '2025-08-12 06:57:07', 0.00, 665, NULL),
-(5, 12, 6, 13, '0', '2025-08-12 12:36:30', '2025-08-12 12:37:47', 0.00, 10, NULL),
-(5, 12, 6, 14, '0', '2025-08-12 12:46:16', '2025-08-12 12:46:49', 0.00, 879, NULL),
-(5, 12, 6, 15, '0', '2025-08-12 12:54:41', '2025-08-12 12:56:09', 500.00, 729, NULL),
-(6, 11, 7, 16, '0', '2025-08-12 23:34:11', '2025-08-12 23:34:54', 500.00, 498, NULL),
-(6, 11, 7, 17, '0', '2025-08-12 23:44:55', '2025-08-12 23:45:17', 500.00, 81, NULL),
-(5, 12, 6, 18, '0', '2025-08-13 16:02:30', '2025-08-13 16:17:31', 500.00, 637, NULL),
-(5, 12, 6, 19, '0', '2025-08-13 16:31:12', '2025-08-13 17:00:13', 500.00, 55, NULL),
-(5, 13, 12, 20, '0', '2025-08-13 16:31:44', '2025-08-13 17:00:37', 500.00, 632, NULL),
-(5, 12, 6, 22, '1', '2025-08-13 18:31:27', NULL, 0.00, 855, NULL),
-(6, 19, 7, 23, '0', '2025-08-13 18:34:49', '2025-08-13 18:36:23', 500.00, 405, NULL);
+INSERT INTO `userspace` (`userid`, `spaceid`, `vehicle_id`, `userSpaceId`, `status`, `StartTime`, `EndTime`, `Fare`, `ParkingNumber`, `vehicleCategoryId`) VALUES
+(2, 7, 1, 5, '1', '2025-08-12 06:57:07', '2025-08-12 06:57:07', 0.00, 3, 1),
+(3, 8, 2, 6, '1', '2025-08-12 06:57:07', '2025-08-12 06:57:07', 0.00, 665, 2),
+(5, 12, 6, 13, '0', '2025-08-12 12:36:30', '2025-08-12 12:37:47', 0.00, 10, 2),
+(5, 12, 6, 14, '0', '2025-08-12 12:46:16', '2025-08-12 12:46:49', 0.00, 879, 2),
+(5, 12, 6, 15, '0', '2025-08-12 12:54:41', '2025-08-12 12:56:09', 500.00, 729, 2),
+(6, 11, 7, 16, '0', '2025-08-12 23:34:11', '2025-08-12 23:34:54', 500.00, 498, 2),
+(6, 11, 7, 17, '0', '2025-08-12 23:44:55', '2025-08-12 23:45:17', 500.00, 81, 2),
+(5, 12, 6, 18, '0', '2025-08-13 16:02:30', '2025-08-13 16:17:31', 500.00, 637, 2),
+(5, 12, 6, 19, '0', '2025-08-13 16:31:12', '2025-08-13 17:00:13', 500.00, 55, 2),
+(5, 13, 12, 20, '0', '2025-08-13 16:31:44', '2025-08-13 17:00:37', 500.00, 632, 1),
+(5, 12, 6, 22, '0', '2025-08-13 18:31:27', '2025-08-14 12:54:03', 225.00, 855, 2),
+(6, 19, 7, 23, '0', '2025-08-13 18:34:49', '2025-08-13 18:36:23', 500.00, 405, 2),
+(6, 19, 7, 24, '0', '2025-08-14 10:21:59', '2025-08-14 10:23:10', 80.00, 202, 2),
+(5, 12, 6, 25, '0', '2025-08-14 10:39:46', '2025-08-14 10:40:26', 30.00, 776, 2),
+(5, 12, 6, 26, '0', '2025-08-14 10:42:35', '2025-08-14 10:42:51', 30.00, 438, 2),
+(5, 12, 6, 27, '0', '2025-08-14 10:49:25', '2025-08-14 10:49:42', 30.00, 670, 2),
+(5, 13, 12, 28, '0', '2025-08-14 10:55:35', '2025-08-14 10:55:58', 80.00, 821, 1),
+(5, 13, 12, 29, '0', '2025-08-14 10:59:28', '2025-08-14 10:59:49', 80.00, 708, 1),
+(5, 13, 12, 30, '0', '2025-08-14 11:00:55', '2025-08-14 11:01:08', 80.00, 996, 1),
+(5, 13, 12, 31, '0', '2025-08-14 11:04:03', '2025-08-14 11:04:20', 80.00, 623, 1),
+(5, 12, 6, 32, '0', '2025-08-14 11:09:16', '2025-08-14 11:09:35', 30.00, 650, 2),
+(5, 13, 12, 33, '0', '2025-08-14 11:15:09', '2025-08-14 11:15:30', 80.00, 747, 1),
+(6, 17, 7, 34, '0', '2025-08-14 08:26:39', '2025-08-14 12:12:17', 90.00, 792, 2),
+(6, 11, 7, 35, '0', '2025-08-14 08:34:38', '2025-08-14 12:19:56', 90.00, 592, 2);
 
 --
 -- Indexes for dumped tables
@@ -272,7 +284,7 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT for table `userspace`
 --
 ALTER TABLE `userspace`
-  MODIFY `userSpaceId` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=24;
+  MODIFY `userSpaceId` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=36;
 
 --
 -- Constraints for dumped tables
@@ -294,6 +306,7 @@ ALTER TABLE `tblvehicle`
 -- Constraints for table `userspace`
 --
 ALTER TABLE `userspace`
+  ADD CONSTRAINT `fk_userspace_vehicleCategory` FOREIGN KEY (`vehicleCategoryId`) REFERENCES `tblcategory` (`ID`) ON DELETE SET NULL ON UPDATE CASCADE,
   ADD CONSTRAINT `fk_vehicle` FOREIGN KEY (`vehicle_id`) REFERENCES `tblvehicle` (`ID`),
   ADD CONSTRAINT `fk_vehiclecategory` FOREIGN KEY (`vehicleCategoryId`) REFERENCES `tblvehicle` (`ID`),
   ADD CONSTRAINT `userspace_ibfk_1` FOREIGN KEY (`userid`) REFERENCES `users` (`id`),

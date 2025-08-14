@@ -1,5 +1,7 @@
 <?php 
-include ('../config/function.php');
+session_start();
+include('../config/function.php');
+include_once('../config/dbcon.php');
 include('include/header.php'); 
 
 if (!isset($_SESSION['id'])) {
@@ -7,11 +9,17 @@ if (!isset($_SESSION['id'])) {
   exit();
 }
 
-alertMessage(); 
-
 $user_id = $_SESSION['id'];
+$username = $_SESSION['loggedInUser']['name']; // gets username from session
 ?>
 
+<!-- Alert Message -->
+<?php alertMessage(); ?>
+
+<!-- Hi! username -->
+<h5 style="margin-bottom:10px; color:#555;">Hi! <?php echo htmlspecialchars($username); ?></h5>
+
+<!-- Dashboard -->
 <h3>Dashboard</h3>
 
 <br><br><h5>Your Space Information:</h5>
@@ -119,13 +127,31 @@ $user_id = $_SESSION['id'];
       <p class="text-sm mb-0 text-capitalize font-weight-bold">Total Fees Paid (NRs.)</p>
       <h5 class="font-weight-bolder mb-0">
         <?php
-          $sql = "SELECT IFNULL(SUM(ParkingFees),0) AS total_fees FROM userspace WHERE userid = ? AND status = '0'";
+          $sql = "SELECT IFNULL(SUM(Fare),0) AS total_fees FROM userspace WHERE userid = ? AND status = '0'";
           $stmt = $conn->prepare($sql);
           $stmt->bind_param("i", $user_id);
           $stmt->execute();
           $result = $stmt->get_result();
           $row = $result->fetch_assoc();
           echo number_format($row['total_fees'], 2);
+          $stmt->close();
+        ?>
+      </h5>
+    </div>
+  </div>
+
+  <div class="col-md-4 mb-4">
+    <div class="card card-body p-3">
+      <p class="text-sm mb-0 text-capitalize font-weight-bold">Total Commission (NRs.)</p>
+      <h5 class="font-weight-bolder mb-0">
+        <?php
+          $sql = "SELECT IFNULL(SUM(Fare*0.15),0) AS total_commission FROM userspace WHERE userid = ? AND status = '0'";
+          $stmt = $conn->prepare($sql);
+          $stmt->bind_param("i", $user_id);
+          $stmt->execute();
+          $result = $stmt->get_result();
+          $row = $result->fetch_assoc();
+          echo number_format($row['total_commission'], 2);
           $stmt->close();
         ?>
       </h5>
@@ -164,7 +190,6 @@ $user_id = $_SESSION['id'];
           echo $row['last_booking'] ? date('Y-m-d H:i', strtotime($row['last_booking'])) : 'No bookings';
           $stmt->close();
 
-          // Close DB connection after all queries
           $conn->close();
         ?>
       </h5>
@@ -174,3 +199,18 @@ $user_id = $_SESSION['id'];
 </div>
 
 <?php include('include/footer.php'); ?>
+
+
+<!-- fade-out alert script -->
+<script>
+window.addEventListener('DOMContentLoaded', (event) => {
+    const alertBox = document.getElementById('alert-msg');
+    if(alertBox){
+        setTimeout(() => {
+            alertBox.style.transition = "opacity 0.8s"; 
+            alertBox.style.opacity = '0'; 
+            setTimeout(() => alertBox.remove(), 800);
+        }, 1500); 
+    }
+});
+</script>
