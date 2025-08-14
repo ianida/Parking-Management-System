@@ -3,12 +3,12 @@ if (session_status() == PHP_SESSION_NONE) {
     session_start();
 }
 
-require_once '../config/dbcon.php';  // Use require_once to avoid multiple includes
+require_once '../config/dbcon.php';  // require_once is used to avoid multiple includes
 include('include/header.php');
 
 $successMessage = '';
 
-// Handle delete request and set message (do NOT redirect immediately)
+// Handles delete request and set message (do NOT redirect immediately)
 if (isset($_GET['del'])) {
     $catid = intval($_GET['del']);
     if ($catid > 0) {
@@ -78,14 +78,14 @@ if (isset($_GET['del'])) {
     table.table thead th {
   text-align: center;
 }
-  /* Center all cells in tbody horizontally */
+  
   table.table tbody td {
     text-align: center;
-    padding-left: 100px;  /* increase */
-    padding-right: 100px; /* increase */
+    padding-left: 100px;  
+    padding-right: 100px; 
   }
 
-  /* Optional: widen space between columns */
+  
   table.table th, table.table td {
     padding-left: 25px;
     padding-right: 25px;
@@ -93,13 +93,13 @@ if (isset($_GET['del'])) {
 </style>
 
 <script>
-    // Hide the success message after 3 seconds
+    // Hide the success message after 2 seconds
     setTimeout(function() {
         var msg = document.getElementById('success-msg');
         if(msg) {
             msg.style.display = 'none';
         }
-    }, 3000); // 3 seconds
+    }, 2000); // 2 seconds
 </script>
 
 <?php include('include/footer.php'); ?>

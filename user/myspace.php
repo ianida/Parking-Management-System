@@ -25,7 +25,6 @@ include('include/header.php');
                             <th>Location</th>
                             <th>Vehicle Type</th>
                             <th>Status</th>
-                            <th>Action</th>
                           </tr></thead><tbody>';
 
                     while ($row = $result->fetch_assoc()) {
@@ -45,13 +44,7 @@ include('include/header.php');
                                 </td>
                                 <td>{$vehicle_type}</td>
                                 <td>{$BookingStatus}</td>
-                                <td>
-                                    <form action='canclespace.php' method='post' class='d-inline'>
-                                        <input type='hidden' name='space_id' value='{$space_id}'>
-                                        <input type='hidden' name='status' value='{$status}'>
-                                        <button type='submit' class='btn btn-danger btn-sm'>Remove Location</button>
-                                    </form>
-                                </td>
+                                
                               </tr>";
                     }
 
