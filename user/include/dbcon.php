@@ -24,6 +24,8 @@ if (!$conn) {
     die("Connection failed: " . mysqli_connect_error());
 }
 
-// Set MySQL timezone to Nepal Time
-mysqli_query($conn, "SET time_zone = '+05:45'");
+
+// Set default timezone to Nepal Time
+date_default_timezone_set('Asia/Kathmandu');
+
 ?>

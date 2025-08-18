@@ -12,7 +12,16 @@ include('include/header.php');
             <div class="card-body">
 
                 <?php
-                $query = "SELECT * FROM space WHERE user_id = ?";
+                $query = "
+                    SELECT s.space_id, s.lat, s.lng, s.location, s.vehicletype, s.status,
+                           u2.name AS booked_by_name, u2.email AS booked_by_email, u2.phone AS booked_by_phone,
+                           v.VehicleModel, v.RegistrationNumber, v.Color, v.VehicleCompanyname
+                    FROM space s
+                    LEFT JOIN userspace us ON s.space_id = us.spaceid AND us.status = '1'
+                    LEFT JOIN users u2 ON us.userid = u2.id
+                    LEFT JOIN tblvehicle v ON us.vehicle_id = v.ID
+                    WHERE s.user_id = ?
+                ";
                 $stmt = $conn->prepare($query);
                 $stmt->bind_param("i", $_SESSION['id']);
                 $stmt->execute();
@@ -25,6 +34,7 @@ include('include/header.php');
                             <th>Location</th>
                             <th>Vehicle Type</th>
                             <th>Status</th>
+                            <th>Actions</th>
                           </tr></thead><tbody>';
 
                     while ($row = $result->fetch_assoc()) {
@@ -32,7 +42,6 @@ include('include/header.php');
                         $lng = htmlspecialchars($row['lng']);
                         $location = htmlspecialchars($row['location']);
                         $vehicle_type = htmlspecialchars($row['vehicletype']);
-                        $space_id = intval($row['space_id']);
                         $status = $row['status'];
 
                         $BookingStatus = ($status == '1') ? 'Booked' : 'Unbooked';
@@ -44,8 +53,25 @@ include('include/header.php');
                                 </td>
                                 <td>{$vehicle_type}</td>
                                 <td>{$BookingStatus}</td>
-                                
-                              </tr>";
+                                <td>";
+
+                        if ($status == '1') {
+                            $details = [
+                                'Name' => $row['booked_by_name'],
+                                'Email' => $row['booked_by_email'],
+                                'Phone' => $row['booked_by_phone'],
+                                'Vehicle Model' => $row['VehicleModel'],
+                                'Registration' => $row['RegistrationNumber'],
+                                'Color' => $row['Color'],
+                                'Company' => $row['VehicleCompanyname']
+                            ];
+                            $detailsJson = htmlspecialchars(json_encode($details));
+                            echo "<button class='btn btn-info btn-sm' onclick='showBookingDetails({$detailsJson})'>View Details</button>";
+                        } else {
+                            echo "-";
+                        }
+
+                        echo "</td></tr>";
                     }
 
                     echo '</tbody></table>';
@@ -61,5 +87,25 @@ include('include/header.php');
         </div>
     </div>
 </div>
+
+<!-- SweetAlert2 -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script>
+function showBookingDetails(details) {
+    let htmlContent = "<ul style='text-align:left;'>";
+    for (let key in details) {
+        htmlContent += `<li><strong>${key}:</strong> ${details[key] ?? 'N/A'}</li>`;
+    }
+    htmlContent += "</ul>";
+
+    Swal.fire({
+        title: 'Booking Details',
+        html: htmlContent,
+        icon: 'info',
+        confirmButtonText: 'Close'
+    });
+}
+</script>
 
 <?php include('include/footer.php'); ?>

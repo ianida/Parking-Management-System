@@ -8,111 +8,63 @@ if (!isset($_SESSION['id'])) {
 include('../config/function.php');
 include('include/header.php');
 
-$userId = $_SESSION['id'];
+$userId = $_SESSION['id'] ?? 0;
 
-// Prepare and execute the SQL to get balance
-$sql = "SELECT balance FROM users WHERE id = ?";
+// Fetch user's current balance
+$sql = "SELECT id, balance FROM users WHERE id = ?";
 $stmt = $conn->prepare($sql);
 $stmt->bind_param("i", $userId);
 $stmt->execute();
 $result = $stmt->get_result();
 
-// Assign balance first
 if ($result->num_rows === 1) {
     $row = $result->fetch_assoc();
     $balance = $row['balance'];
 } else {
     $balance = 0;
 }
-
-// Then compute class
-$balanceClass = $balance < 0 ? 'negative-balance' : 'positive-balance';
 ?>
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<style>
+<div class="content">
+    <div class="animated fadeIn">
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="card mb-4">
+                    <!-- Card Header -->
+                    <div class="card-header bg-primary text-white">
+                        <strong>Your Account Balance</strong>
+                    </div>
 
-* { 
-    margin: 0; 
-    padding: 0; 
-    box-sizing: 
-    border-box; 
-}
+                    <!-- Card Body -->
+                    <div class="card-body text-center">
+                        <?php if ($balance == 0): ?>
+                            <p class="text-success">You’re all settled! No pending payments.</p>
 
-body { 
-    background-color: #1f1f1f; 
-    font-family: Arial, sans-serif; 
-    color: #fff; 
-    height: 100vh; 
-    display: flex; 
-    margin-left: 100px; 
-    align-items: center; 
-}
+                        <?php elseif ($balance < 0): ?>
+                            <p class="text-danger fw-bold">Pending Payment</p>
+                            <h4 class="fw-bold text-danger">Rs. <?php echo number_format(abs($balance), 2); ?></h4>
+                            <p class="text-muted">Please settle your balance to continue using services.</p>
+                            <form action="process_payment.php" method="post">
+                                <input type="hidden" name="user_id" value="<?php echo $userId; ?>">
+                                <button type="submit" name="payment_id" value="<?php echo $row['id']; ?>"
+                                        class="btn btn-danger btn-sm mt-5">Settle Balance</button>
+                            </form>
 
-.balance-container { 
-    background-color: #f4f4f4; 
-    color: #333; 
-    margin-top: 60px; 
-    margin-left: 60px; 
-    padding: 40px 60px; 
-    border-radius: 10px; 
-    box-shadow: 0 0 25px rgba(0, 0, 0, 0.5); 
-    text-align: center; 
-    min-width: 600px; 
-}
+                        <?php else: ?>
+                            <p class="text-primary fw-bold">Available Balance</p>
+                            <h4 class="fw-bold text-success">Rs. <?php echo number_format($balance, 2); ?></h4>
+                            <p class="text-muted">Great! You have sufficient balance.</p>
+                        <?php endif; ?>
+                    </div>
 
-.balance-container h2 { 
-    margin-bottom: 20px; 
-    margin-top: 60px; 
-    font-size: 1.6rem; 
-}
-
-.amount { 
-    font-size: 2.5rem; 
-    margin-bottom: 30px; 
-}
-
-.positive-balance { 
-    color: #27ae60; 
-}
-
-.negative-balance { 
-    color: rgb(224, 49, 18); 
-}
-
-.settle-btn { 
-    padding: 12px 30px; 
-    background-color: #27ae60; 
-    border: none; 
-    border-radius: 5px; 
-    margin-top: 40px; 
-    margin-left: 260px; 
-    color: white; 
-    font-size: 1rem; 
-    cursor: pointer; 
-    transition: background-color 0.3s ease; 
-}
-
-.settle-btn:hover { 
-    background-color: #219150; 
-}
-
-</style>
-</head>
-<body>
-<div class="main-content">
-    <div class="balance-container">
-        <h2>Your Current Balance </h2>
-        <div class="amount <?php echo $balanceClass; ?>">
-            Rs. <?php echo number_format($balance, 2); ?>
+                    <!-- Card Footer -->
+                    <div class="card-footer text-center">
+                        <small class="text-muted">Updated on <?php echo date("F j, Y, g:i a"); ?></small>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </div>
-<form action="settle_balance.php" method="post">
-    <input type="hidden" name="user_id" value="<?php echo $_SESSION['id']; ?>">
-    <button type="submit" class="settle-btn">Settle Balance</button>
-</form>
-</body>
-</html>
+
+<?php include('include/footer.php'); ?>
