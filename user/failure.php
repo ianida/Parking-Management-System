@@ -16,7 +16,7 @@ include('include/header.php');
                     </div>
                     <div class="card-body text-center">
                         <p class="text-danger fw-bold">Unfortunately, your payment was not successful.</p>
-                        <p class="text-muted">Please try again!.</p>
+                        <p class="text-muted">Please try again!</p>
                         <a href="userbalance.php" class="btn btn-primary mt-3">Back to Balance</a>
                     </div>
                 </div>

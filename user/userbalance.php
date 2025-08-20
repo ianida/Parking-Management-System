@@ -5,6 +5,12 @@ if (!isset($_SESSION['id'])) {
     exit();
 }
 
+date_default_timezone_set('Asia/Kathmandu');
+
+// echo 'Current PHP timezone: ' . date_default_timezone_get() . '<br>';
+// echo 'Current time: ' . date("F j, Y, g:i a") . '<br>';
+
+
 include('../config/function.php');
 include('include/header.php');
 

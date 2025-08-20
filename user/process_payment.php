@@ -36,7 +36,8 @@ $data = [
     // "amount" => $payment['balance'] * (-100), // in paisa
     "amount" => abs($payment['balance']) * 100, // convert negative balance to positive paisa
     "purchase_order_id" => $_POST['payment_id'],
-    "purchase_order_name" => "Parking Payment"
+    "purchase_order_name" => "Parking Payment",
+    "failure_url"  => BASE_URL_KHALTI . "user/failure.php"
 ];
 
 $ch = curl_init();
