@@ -45,42 +45,49 @@ button:hover {
 label {
     font-weight: 600;
 }
+.add-space-map-form{
+    display:flex;
+
+}
 </style>
 </head>
 <body>
 
 <h6>Select the precise location:</h6>
 <input id="location_search" type="text" placeholder="Type area name and press Enter" style="width:100%;">
-
-<div id="map"></div>
-
-<form method="POST" style="max-width:400px;">
-    <div class="mb-2">
-        <label for="location_name">Area Name:</label>
-        <input type="text" name="location" id="location_name" class="form-control" required>
+<div class = "add-space-map-form" >
+    <div id="map" style = "flex:2;">
     </div>
 
-    <div class="mb-3">
-        <label for="vehicle_type">Choose Vehicle Category:</label>
-        <select name="vehicle-type" id="vehicle_type" class="form-select" required>
-            <option value="">Select a vehicle category</option>
-            <?php
-            $sqlVehicleCat = "SELECT VehicleCat FROM tblcategory";
-            $resultVehicle = $conn->query($sqlVehicleCat);
-            if ($resultVehicle->num_rows > 0) {
-                while($row = $resultVehicle->fetch_assoc()){
-                    echo '<option value="'.$row['VehicleCat'].'">'.$row['VehicleCat'].'</option>';
+    <form method="POST" style="max-width:400px; flex:1; padding: 10px;">
+        <div class="mb-2">
+            <label for="location_name" style=" font-size: 14px;">Area Name:</label>
+            <input type="text" name="location" id="location_name" class="form-control" required>
+        </div>
+
+        <div class="mb-3">
+            <label for="vehicle_type" style=" font-size: 14px;">Choose Vehicle Category:</label>
+            <select name="vehicle-type" id="vehicle_type" class="form-select" required>
+                <option value="">Select a vehicle category</option>
+                <?php
+                $sqlVehicleCat = "SELECT VehicleCat FROM tblcategory";
+                $resultVehicle = $conn->query($sqlVehicleCat);
+                if ($resultVehicle->num_rows > 0) {
+                    while($row = $resultVehicle->fetch_assoc()){
+                        echo '<option value="'.$row['VehicleCat'].'">'.$row['VehicleCat'].'</option>';
+                    }
                 }
-            }
-            ?>
-        </select>
-    </div>
+                ?>
+            </select>
+        </div>
 
-    <input type="hidden" id="latitude" name="latitude">
-    <input type="hidden" id="longitude" name="longitude">
+        <input type="hidden" id="latitude" name="latitude">
+        <input type="hidden" id="longitude" name="longitude">
 
-    <button type="submit" name="submit" class="btn btn-primary" style="width:150px;">Confirm</button>
-</form>
+        <button type="submit" name="submit" class="btn btn-primary" style="width:150px;">Confirm</button>
+    </form>
+
+</div>
 
 <?php
 if (isset($_POST['submit'])) {

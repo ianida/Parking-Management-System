@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Aug 18, 2025 at 11:15 AM
+-- Generation Time: Aug 20, 2025 at 05:06 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -65,9 +65,9 @@ INSERT INTO `space` (`space_id`, `user_id`, `lat`, `lng`, `vehicletype`, `locati
 (7, 3, '27.694634128', '85.32078932', 'Car', 'ANNAPURNA', '1'),
 (8, 2, '27.695676505', '85.320704287', 'Motorbike', 'MHP', '1'),
 (11, 5, '27.692162169', '85.32553831', 'Motorbike', 'Kathmandu District Court', '0'),
-(12, 6, '27.696080238', '85.321283644', 'Motorbike', 'Department of Archaeology', '1'),
+(12, 6, '27.696080238', '85.321283644', 'Motorbike', 'Department of Archaeology', '0'),
 (13, 6, '27.696995994', '85.321850328', 'Car', 'Supreme Court', '0'),
-(17, 5, '27.6734454', '85.325035', 'Motorbike', 'Patan Durbar Square', '0'),
+(17, 5, '27.6734454', '85.325035', 'Motorbike', 'Patan Durbar Square', '1'),
 (19, 5, '27.6696351', '85.3300728', 'Motorbike', 'Dupat', '0');
 
 -- --------------------------------------------------------
@@ -118,13 +118,13 @@ CREATE TABLE `tblpayment` (
 --
 
 INSERT INTO `tblpayment` (`payment_id`, `space_user_id`, `space_owner_id`, `booking_id`, `amount`, `commission`, `paid_status`, `payment_method`, `created_at`, `paid_time`) VALUES
-(1, 6, 5, 38, 60.00, 9.00, 'pending', 'khalti', '2025-08-16 08:22:46', NULL),
-(2, 6, 5, 39, 90.00, 13.50, 'pending', 'khalti', '2025-08-17 06:03:37', NULL),
-(3, 6, 5, 40, 30.00, 4.50, 'pending', 'khalti', '2025-08-17 09:05:42', NULL),
-(4, 6, 5, 41, 30.00, 4.50, 'pending', 'khalti', '2025-08-17 09:58:36', NULL),
-(5, 6, 5, 42, 30.00, 4.50, 'pending', 'khalti', '2025-08-17 10:11:26', NULL),
-(6, 6, 5, 43, 30.00, 4.50, 'pending', 'khalti', '2025-08-17 10:16:47', NULL),
-(7, 6, 5, 44, 30.00, 4.50, 'pending', 'khalti', '2025-08-17 10:20:09', NULL),
+(1, 6, 5, 38, 60.00, 9.00, 'paid', 'khalti', '2025-08-16 08:22:46', '2025-08-20 15:01:41'),
+(2, 6, 5, 39, 90.00, 13.50, 'paid', 'khalti', '2025-08-17 06:03:37', '2025-08-20 15:01:41'),
+(3, 6, 5, 40, 30.00, 4.50, 'paid', 'khalti', '2025-08-17 09:05:42', '2025-08-20 15:01:41'),
+(4, 6, 5, 41, 30.00, 4.50, 'paid', 'khalti', '2025-08-17 09:58:36', '2025-08-20 15:01:41'),
+(5, 6, 5, 42, 30.00, 4.50, 'paid', 'khalti', '2025-08-17 10:11:26', '2025-08-20 15:01:41'),
+(6, 6, 5, 43, 30.00, 4.50, 'paid', 'khalti', '2025-08-17 10:16:47', '2025-08-20 15:01:41'),
+(7, 6, 5, 44, 30.00, 4.50, 'paid', 'khalti', '2025-08-17 10:20:09', '2025-08-20 15:01:41'),
 (8, 5, 6, 45, 80.00, 12.00, 'pending', 'khalti', '2025-08-17 10:25:31', NULL);
 
 -- --------------------------------------------------------
@@ -152,7 +152,8 @@ INSERT INTO `tblvehicle` (`ID`, `UserId`, `Color`, `VehicleModel`, `VehicleCateg
 (2, 3, 'Black', 'Hornet', 'Motorbike', 'Honda', 'BA-5-PA-5678'),
 (6, 5, 'Grey', 'Honda Shine', 'Motorbike', 'Honda', 'BA-5-PA-5340'),
 (7, 6, 'Blue', 'Hunter 350', 'Motorbike', 'Royal Enfield', 'BA-2-CHA-9870'),
-(12, 5, 'Purple', 'BYD Dolphin', 'Car', 'BYD', 'BA-5-PA-1590');
+(12, 5, 'Purple', 'BYD Dolphin', 'Car', 'BYD', 'BA-5-PA-1590'),
+(13, 6, 'Orange', 'Deepal S05', 'Car', 'Deepal', 'BA-5-PA-7777');
 
 -- --------------------------------------------------------
 
@@ -180,8 +181,8 @@ INSERT INTO `users` (`id`, `username`, `name`, `email`, `phone`, `password`, `ro
 (1, 'admin', 'Admin User', 'admin@example.com', '9841000089', 'admin123', 'admin', '2025-08-10', 0.00),
 (2, 'john_doe', 'John Doe', 'john@example.com', '9800000555', 'john123', 'user', '2025-08-01', 0.00),
 (3, 'mary_smith', 'Mary Smith', 'mary@example.com', '9800000002', 'mary123', 'user', '2025-08-05', 0.00),
-(5, 'm.kim', 'mkim User', 'mkim013@proton.me', '9841567851', 'ForMkim013', 'user', '2025-08-10', 21.00),
-(6, 'rojarmhj', 'Rojar Maharjan', 'rojarmhj@proton.me', '9841600003', 'ForRojar1', 'user', '2025-08-10', -77.50);
+(5, 'm.kim', 'mkim User', 'mkim013@proton.me', '9841567851', 'ForMkim013', 'user', '2025-08-10', 90.75),
+(6, 'rojarmhj', 'Rojar Maharjan', 'rojarmhj@proton.me', '9841600003', 'ForRojar1', 'user', '2025-08-10', 0.00);
 
 -- --------------------------------------------------------
 
@@ -235,7 +236,8 @@ INSERT INTO `userspace` (`userid`, `spaceid`, `vehicle_id`, `userSpaceId`, `stat
 (5, 13, 12, 45, '0', '2025-08-17 16:10:15', '2025-08-17 16:10:31', 80.00, 198, 1),
 (5, 12, 6, 46, '0', '2025-08-17 16:21:51', '2025-08-17 16:22:18', 30.00, 188, 2),
 (5, 12, 6, 47, '0', '2025-08-17 16:21:59', '2025-08-17 16:22:18', 30.00, 362, 2),
-(5, 12, 6, 48, '1', '2025-08-18 14:32:25', NULL, 0.00, 312, 2);
+(5, 12, 6, 48, '0', '2025-08-18 14:32:25', '2025-08-19 19:22:08', 465.00, 312, 2),
+(6, 17, 7, 49, '1', '2025-08-19 19:10:39', NULL, 0.00, 404, 2);
 
 --
 -- Indexes for dumped tables
@@ -324,7 +326,7 @@ ALTER TABLE `tblpayment`
 -- AUTO_INCREMENT for table `tblvehicle`
 --
 ALTER TABLE `tblvehicle`
-  MODIFY `ID` int(10) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
+  MODIFY `ID` int(10) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
 
 --
 -- AUTO_INCREMENT for table `users`
@@ -336,7 +338,7 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT for table `userspace`
 --
 ALTER TABLE `userspace`
-  MODIFY `userSpaceId` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=49;
+  MODIFY `userSpaceId` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=50;
 
 --
 -- Constraints for dumped tables

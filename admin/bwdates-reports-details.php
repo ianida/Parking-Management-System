@@ -119,7 +119,7 @@
                       <th>Company Name</th>
                       <th>Registration<br>Number</th>
                       <th>Vehicle Owner</th>
-                      <th>Fare<br>(Unpaid)</th>
+                      <th>Fare</th>
                     </tr>
                   </thead>
                   <tbody>

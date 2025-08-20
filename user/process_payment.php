@@ -31,7 +31,7 @@ $stmt->close();
 $url = "https://a.khalti.com/api/v2/epayment/initiate/";
 
 $data = [
-    "return_url" => BASE_URL_KHALTI . "success.php",
+    "return_url" => BASE_URL_KHALTI . "user/success.php",
     "website_url" => BASE_URL_KHALTI,
     // "amount" => $payment['balance'] * (-100), // in paisa
     "amount" => abs($payment['balance']) * 100, // convert negative balance to positive paisa
