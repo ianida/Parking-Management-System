@@ -81,13 +81,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['vehicle_id'])) {
 
         // Generate unique parking number
         do {
-            $parkingNumber = rand(1, 999);
+            $parkingNumber = rand(1000, 9999); // duplicate aayera bigger number use garya
             $stmtCheckPN = $conn->prepare("SELECT userSpaceId FROM userspace WHERE ParkingNumber=? AND status=1");
             $stmtCheckPN->bind_param("i", $parkingNumber);
             $stmtCheckPN->execute();
             $stmtPNResult = $stmtCheckPN->get_result();
+            $exists = $stmtPNResult->num_rows > 0;
             $stmtCheckPN->close();
-        } while ($stmtPNResult->num_rows > 0);
+        } while ($exists);
+
 
         $start_time = date('Y-m-d H:i:s');
 

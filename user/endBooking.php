@@ -1,7 +1,7 @@
 <?php
-ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
-error_reporting(E_ALL);
+// ini_set('display_errors', 1);
+// ini_set('display_startup_errors', 1);
+// error_reporting(E_ALL);
 
 session_start();
 include('include/dbcon.php');
@@ -71,15 +71,30 @@ while ($booking = $result->fetch_assoc()) {
     $update_stmt->execute();
     $update_stmt->close();
 
-    // Update user balance
+
+    // Option 1: Old Way (Negative Commission)
+    // Update user balance (adds negative commission → reduces balance)
     $balance_sql = "UPDATE users SET balance = balance + ? WHERE id=?";
     $bal_stmt = $conn->prepare($balance_sql);
-    $bal_stmt->bind_param("di", $commission, $user_id);
+    $bal_stmt->bind_param("di", $commission, $user_id); // commission is negative
     $bal_stmt->execute();
     $bal_stmt->close();
 
+
+    // Option 2: Store negative balance so user owes money
+    // $netPayment = $fare - $commission;
+    // $balance_sql = "UPDATE users SET balance = balance - ? WHERE id=?";
+    // $bal_stmt = $conn->prepare($balance_sql);
+    // $bal_stmt->bind_param("di", $netPayment, $user_id);
+    // $bal_stmt->execute();
+    // $bal_stmt->close();
+
     $totalFare += $fare;
+
+
+    
 }
+
 
 // Update space status to unbooked
 $space_sql = "UPDATE space SET status='0' WHERE space_id=?";

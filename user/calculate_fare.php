@@ -1,13 +1,5 @@
 <?php
 
-/**
- * Calculate total parking fare based on start/end time and vehicle type
- * @param string $startTime - booking start time (Y-m-d H:i:s)
- * @param string $endTime   - booking end time (Y-m-d H:i:s)
- * @param string $vehicleType - type of vehicle (from tblcategory)
- * @param float $discountPercent - optional discount percentage
- * @return float - total fare (always positive)
- */
 function calculateParkingFare($startTime, $endTime, $vehicleType, $discountPercent = 0) {
     // Map tblcategory names to fare keys
     $categoryMap = [
@@ -72,14 +64,17 @@ function calculateParkingFare($startTime, $endTime, $vehicleType, $discountPerce
     return round($fare, 2);
 }
 
-/**
- * Calculate commission (admin share) from total fare
- * @param float $totalFare
- * @return float - commission (positive)
- */
+//positive wala
+// function calculateComission($totalFare){
+//     $commission = round($totalFare * 0.15, 2);
+//     return $commission;  //Positive commission
+// }
+
+//old wala negative
 function calculateComission($totalFare){
     $commission = round($totalFare * 0.15, 2);
-    return $commission;  // now positive
+    return $commission * -1;  // Negative commission
 }
+
 
 ?>
